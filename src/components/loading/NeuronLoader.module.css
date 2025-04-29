@@ -1,0 +1,159 @@
+.loaderContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.neuronGrid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-gap: 10px;
+  width: 300px;
+  height: 300px;
+  margin-bottom: 2rem;
+}
+
+.neuron {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #1a1a1a;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.neuron::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: #6366f1;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.neuron.active {
+  background-color: #1a1a1a;
+}
+
+.neuron.active::before {
+  animation: pulse 1.5s ease-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes pulse {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.8;
+  }
+  100% {
+    width: 20px;
+    height: 20px;
+    opacity: 0;
+  }
+}
+
+.loaderInfo {
+  text-align: center;
+  color: white;
+  width: 80%;
+  max-width: 500px;
+}
+
+.loaderTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #6366f1, #10b981);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titlePulse 2s infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.progressContainer {
+  width: 100%;
+  height: 6px;
+  background-color: #1a1a1a;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(to right, #6366f1, #10b981);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.loaderStats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.statItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.statLabel {
+  color: #a1a1aa;
+}
+
+.statValue {
+  color: #6366f1;
+  font-weight: 600;
+}
+
+/* Synapse connections */
+.neuronGrid::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background-image: 
+    radial-gradient(circle, transparent 50%, #6366f1 50%),
+    linear-gradient(90deg, transparent 49.5%, #6366f1 49.5%, #6366f1 50.5%, transparent 50.5%),
+    linear-gradient(0deg, transparent 49.5%, #6366f1 49.5%, #6366f1 50.5%, transparent 50.5%);
+  background-size: 30px 30px, 30px 30px, 30px 30px;
+  background-position: 0 0, 0 0, 0 0;
+  opacity: 0.05;
+  pointer-events: none;
+  animation: synapseFlow 10s linear infinite;
+}
+
+@keyframes synapseFlow {
+  0% {
+    background-position: 0 0, 0 0, 0 0;
+  }
+  100% {
+    background-position: 30px 30px, 30px 0, 0 30px;
+  }
+}

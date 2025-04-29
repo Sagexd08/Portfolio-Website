@@ -1,7 +1,16 @@
 import { motion } from 'framer-motion';
 import Scene from '@/components/3d/Scene';
+import BlinkingText from '@/components/ui/BlinkingText';
+import { useNavigation } from '@/context/NavigationContext';
 
 const Hero = () => {
+  const { navigateTo } = useNavigation();
+
+  const handleNavigation = (targetId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    navigateTo(targetId, `#hero-${targetId}`);
+  };
+
   return (
     <section className="relative h-screen w-full overflow-hidden" id="hero">
       {/* Enhanced 3D Background */}
@@ -26,11 +35,22 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="max-w-4xl backdrop-blur-sm bg-dark-darker/30 p-8 rounded-xl"
         >
-          <h1 className="heading-xl mb-6">
+          <h1 className="heading-xl mb-4">
             I'm <span className="gradient-text">Sohom Chatterjee</span>,
-            <br />
-            AI/ML Developer
           </h1>
+          <div className="text-2xl md:text-3xl font-bold mb-6">
+            <BlinkingText
+              phrases={[
+                "AI/ML Developer",
+                "Deep Learning Specialist",
+                "Computer Vision Engineer",
+                "NLP Enthusiast"
+              ]}
+              typingSpeed={80}
+              deleteSpeed={50}
+              delayBetweenPhrases={1500}
+            />
+          </div>
           <p className="text-xl md:text-2xl text-light/80 mb-8 max-w-2xl mx-auto">
             Building intelligent systems that solve real-world problems
           </p>
@@ -42,13 +62,17 @@ const Hero = () => {
           >
             <a
               href="#projects"
+              id="hero-projects"
               className="px-8 py-3 bg-primary hover:bg-primary-dark text-white rounded-full transition-colors font-medium"
+              onClick={(e) => handleNavigation('projects', e)}
             >
               View My Work
             </a>
             <a
               href="#contact"
+              id="hero-contact"
               className="px-8 py-3 bg-transparent border border-light/30 hover:border-light/60 text-light rounded-full transition-colors font-medium"
+              onClick={(e) => handleNavigation('contact', e)}
             >
               Get In Touch
             </a>

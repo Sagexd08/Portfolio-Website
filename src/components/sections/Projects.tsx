@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Card from '@/components/ui/Card';
+import FlipCard from '@/components/ui/FlipCard';
+import TypeWriter from '@/components/ui/TypeWriter';
+import ScrollTrigger from '@/components/animations/ScrollTrigger';
 import { projects } from '@/data/projects';
 
 const Projects = () => {
@@ -28,7 +31,14 @@ const Projects = () => {
           transition={{ duration: 0.6 }}
           className="mb-16 text-center"
         >
-          <h2 className="heading-lg gradient-text mb-4">My Projects</h2>
+          <h2 className="heading-lg gradient-text mb-4">
+            <TypeWriter
+              text="My AI/ML Projects"
+              speed={80}
+              cursorStyle="block"
+              cursorColor="#6366f1"
+            />
+          </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-6"></div>
           <p className="text-xl text-light/70 max-w-3xl mx-auto">
             Explore my latest work in AI and machine learning
@@ -83,7 +93,7 @@ const Projects = () => {
             },
           }}
         >
-          {filteredProjects.map((project) => (
+          {filteredProjects.map((project, index) => (
             <motion.div
               key={project.id}
               variants={{
@@ -91,14 +101,27 @@ const Projects = () => {
                 visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
               }}
             >
-              <Card
-                title={project.title}
-                description={project.description}
-                image={project.image}
-                tags={project.technologies}
-                demoLink={project.demoUrl}
-                githubLink={project.githubUrl}
-              />
+              <ScrollTrigger delay={index * 0.1}>
+                {index % 2 === 0 ? (
+                  <FlipCard
+                    frontImage={project.image}
+                    title={project.title}
+                    description={project.description}
+                    tags={project.technologies}
+                    demoLink={project.demoUrl}
+                    codeLink={project.githubUrl}
+                  />
+                ) : (
+                  <Card
+                    title={project.title}
+                    description={project.description}
+                    image={project.image}
+                    tags={project.technologies}
+                    demoLink={project.demoUrl}
+                    githubLink={project.githubUrl}
+                  />
+                )}
+              </ScrollTrigger>
             </motion.div>
           ))}
         </motion.div>

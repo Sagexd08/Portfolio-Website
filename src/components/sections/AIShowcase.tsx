@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import ContributionChart from '@/components/charts/ContributionChart';
 import Scene from '@/components/3d/Scene';
+import NeuralNetworkPlayground from '@/components/3d/NeuralNetworkPlayground';
+import ScrollTrigger from '@/components/animations/ScrollTrigger';
 
 // Sample data for the contribution chart
 const contributionData = Array.from({ length: 365 }, (_, i) => {
@@ -29,7 +31,7 @@ const modelMetrics = [
 ];
 
 const AIShowcase: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'contributions' | 'metrics'>('contributions');
+  const [activeTab, setActiveTab] = useState<'contributions' | 'metrics' | 'playground'>('contributions');
 
   return (
     <section id="showcase" className="py-24 bg-dark">
@@ -70,6 +72,16 @@ const AIShowcase: React.FC = () => {
               onClick={() => setActiveTab('metrics')}
             >
               Model Metrics
+            </button>
+            <button
+              className={`px-6 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'playground'
+                  ? 'bg-primary text-white'
+                  : 'text-light/70 hover:text-white'
+              }`}
+              onClick={() => setActiveTab('playground')}
+            >
+              Neural Network
             </button>
           </div>
         </div>
@@ -159,6 +171,40 @@ const AIShowcase: React.FC = () => {
                   showFloatingText={false}
                 />
               </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'playground' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <ScrollTrigger>
+                <h3 className="text-xl font-bold mb-6 text-center">Interactive Neural Network</h3>
+                <p className="text-center text-light/70 mb-8 max-w-3xl mx-auto">
+                  Explore how neural networks process information by interacting with this visualization.
+                  Click on nodes to change activations and connections to adjust weights.
+                </p>
+
+                <div className="h-[500px] w-full">
+                  <NeuralNetworkPlayground
+                    layers={[4, 6, 5, 3]}
+                    interactive={true}
+                  />
+                </div>
+
+                <div className="mt-8 bg-dark-darker p-4 rounded-lg">
+                  <h4 className="font-medium mb-2">How Neural Networks Work</h4>
+                  <p className="text-light/70 text-sm">
+                    Neural networks are computational models inspired by the human brain. They consist of layers of
+                    interconnected nodes (neurons) that process information. Each connection has a weight that
+                    determines its influence on the network's output. During training, these weights are adjusted
+                    to minimize the difference between predicted and actual outputs.
+                  </p>
+                </div>
+              </ScrollTrigger>
             </motion.div>
           )}
         </div>

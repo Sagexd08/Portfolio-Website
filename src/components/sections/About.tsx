@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import SkillTag from '@/components/ui/SkillTag';
+import ParticleText from '@/components/animations/ParticleText';
+import MatrixRain from '@/components/animations/MatrixRain';
 
 const About = () => {
   const skills = [
@@ -45,7 +47,16 @@ const About = () => {
           transition={{ duration: 0.6 }}
           className="mb-16 text-center"
         >
-          <h2 className="heading-lg gradient-text mb-4">About Me</h2>
+          <div className="relative h-24 mb-8">
+            <ParticleText
+              text="About Me"
+              fontSize={80}
+              particleSize={2}
+              color="#6366f1"
+              interactive={true}
+              density={0.8}
+            />
+          </div>
           <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-secondary-500 mx-auto mb-6"></div>
           <p className="text-xl text-light/70 max-w-3xl mx-auto">
             AI/ML developer passionate about building intelligent systems that solve real-world problems
@@ -61,6 +72,17 @@ const About = () => {
             className="relative"
           >
             <div className="relative h-[400px] w-full lg:h-[500px] rounded-xl overflow-hidden">
+              {/* Matrix Rain Effect */}
+              <div className="absolute inset-0 z-5 opacity-40">
+                <MatrixRain
+                  fontSize={12}
+                  speed={0.8}
+                  density={0.05}
+                  color="#6366f1"
+                  opacity={0.5}
+                />
+              </div>
+
               <div className="absolute inset-0 bg-gradient-to-tr from-primary-600/20 to-secondary-600/20 z-10 rounded-xl"></div>
               <Image
                 src="/images/profile.jpg"

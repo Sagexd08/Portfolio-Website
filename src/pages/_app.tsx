@@ -2,32 +2,40 @@ import { useState, useEffect } from 'react';
 import { AppProps } from 'next/app';
 import { AnimatePresence } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
+import NeuronLoader from '@/components/loading/NeuronLoader';
+import { NavigationProvider } from '@/context/NavigationContext';
 import '@/styles/globals.css';
 
 function MyApp({ Component, pageProps, router }: AppProps) {
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Simulate loading assets
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+  // Handle completion of loading animation
+  const handleLoadComplete = () => {
+    setLoading(false);
+  };
 
-    return () => clearTimeout(timer);
+  // Use smooth scrolling
+  useEffect(() => {
+    // Disable default smooth scrolling to use our custom implementation
+    document.documentElement.style.scrollBehavior = 'auto';
+
+    return () => {
+      document.documentElement.style.scrollBehavior = '';
+    };
   }, []);
 
   return (
     <>
       {loading ? (
-        <div className="fixed inset-0 flex items-center justify-center bg-dark text-white">
-          <div className="text-2xl font-bold">Loading your AI experience...</div>
-        </div>
+        <NeuronLoader onLoadComplete={handleLoadComplete} />
       ) : (
-        <Layout>
-          <AnimatePresence mode="wait">
-            <Component {...pageProps} key={router.route} />
-          </AnimatePresence>
-        </Layout>
+        <NavigationProvider>
+          <Layout>
+            <AnimatePresence mode="wait">
+              <Component {...pageProps} key={router.route} />
+            </AnimatePresence>
+          </Layout>
+        </NavigationProvider>
       )}
     </>
   );

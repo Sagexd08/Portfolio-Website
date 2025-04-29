@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollPosition } from '@/hooks/useScrollPosition';
+import { useNavigation } from '@/context/NavigationContext';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const scrollPosition = useScrollPosition();
   const isScrolled = scrollPosition > 50;
+  const { navigateTo } = useNavigation();
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -41,13 +43,19 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.name}
                 href={link.href}
                 className="text-light/80 hover:text-primary-400 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const targetId = link.href.replace('#', '');
+                  navigateTo(targetId, `#nav-${link.name.toLowerCase()}`);
+                }}
+                id={`nav-${link.name.toLowerCase()}`}
               >
                 {link.name}
-              </Link>
+              </a>
             ))}
           </nav>
 
@@ -85,18 +93,24 @@ const Header = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
               <div className="flex flex-col space-y-4 p-6">
                 {navLinks.map((link) => (
-                  <Link
+                  <a
                     key={link.name}
                     href={link.href}
                     className="text-light/80 hover:text-primary-400 transition-colors py-2"
-                    onClick={() => setIsOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsOpen(false);
+                      const targetId = link.href.replace('#', '');
+                      navigateTo(targetId, `#mobile-nav-${link.name.toLowerCase()}`);
+                    }}
+                    id={`mobile-nav-${link.name.toLowerCase()}`}
                   >
                     {link.name}
-                  </Link>
+                  </a>
                 ))}
               </div>
             </motion.nav>

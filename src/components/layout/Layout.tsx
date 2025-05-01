@@ -3,6 +3,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the brain background component
+const BrainBackground = dynamic(() => import('@/components/3d/NeuralScene'), {
+  ssr: false,
+  loading: () => <div className="fixed inset-0 bg-background z-[-1]" />
+});
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,7 +17,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
-  
+
   // Page transition variants
   const pageVariants = {
     initial: {
@@ -31,11 +38,16 @@ const Layout = ({ children }: LayoutProps) => {
       },
     },
   };
-  
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
+      {/* Brain thinking background */}
+      <div className="fixed inset-0 z-[-1] pointer-events-none">
+        <BrainBackground />
+      </div>
+
       <Header />
-      
+
       <AnimatePresence mode="wait">
         <motion.main
           key={router.route}
@@ -48,7 +60,7 @@ const Layout = ({ children }: LayoutProps) => {
           {children}
         </motion.main>
       </AnimatePresence>
-      
+
       <Footer />
     </div>
   );

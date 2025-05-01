@@ -14,7 +14,11 @@ const FlipCard = dynamic(() => import('@/components/ui/FlipCard'), {
   )
 });
 
-const Projects = () => {
+interface ProjectsProps {
+  id?: string;
+}
+
+const Projects: React.FC<ProjectsProps> = ({ id = 'projects' }) => {
   const [filter, setFilter] = useState<string | null>(null);
   const controls = useAnimation();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -31,7 +35,7 @@ const Projects = () => {
   const filteredProjects = filter
     ? projects.filter(project => project.technologies.includes(filter))
     : projects;
-    
+
   // Start animations when section becomes visible
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -42,18 +46,18 @@ const Projects = () => {
       },
       { threshold: 0.1 }
     );
-    
+
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
     }
-    
+
     return () => {
       if (sectionRef.current) {
         observer.unobserve(sectionRef.current);
       }
     };
   }, [controls]);
-  
+
   // Handler for when a card is flipped
   const handleCardFlip = (projectId: string, isFlipped: boolean) => {
     setActiveFlipCard(isFlipped ? projectId : null);
@@ -69,7 +73,7 @@ const Projects = () => {
       }
     }
   };
-  
+
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
@@ -80,7 +84,7 @@ const Projects = () => {
   };
 
   return (
-    <section id="projects" className="py-24 bg-dark-lighter relative" ref={sectionRef}>
+    <section id={id} className="py-24 bg-dark-lighter relative" ref={sectionRef}>
       <div className="container-section">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -181,7 +185,7 @@ const Projects = () => {
           </div>
         )}
       </div>
-      
+
       {/* Neural glow effect at the bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-primary/10 to-transparent pointer-events-none" />
     </section>

@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
-const Contact = () => {
+interface ContactProps {
+  id?: string;
+}
+
+const Contact: React.FC<ContactProps> = ({ id = 'contact' }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -37,7 +41,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-24 bg-gradient-to-b from-dark to-dark-900">
+    <section id={id} className="py-24 bg-gradient-to-b from-dark to-dark-900">
       <div className="container-section">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

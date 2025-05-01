@@ -30,11 +30,15 @@ const modelMetrics = [
   { name: 'Named Entity Recognition', accuracy: 0.92, precision: 0.90, recall: 0.93 },
 ];
 
-const AIShowcase: React.FC = () => {
+interface AIShowcaseProps {
+  id?: string;
+}
+
+const AIShowcase: React.FC<AIShowcaseProps> = ({ id = 'ai-showcase' }) => {
   const [activeTab, setActiveTab] = useState<'contributions' | 'metrics' | 'playground'>('contributions');
 
   return (
-    <section id="showcase" className="py-24 bg-dark">
+    <section id={id} className="py-24 bg-dark">
       <div className="container-section">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

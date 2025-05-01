@@ -11,51 +11,51 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#6366f1',
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
-          dark: '#4f46e5',
-          light: '#818cf8',
+          DEFAULT: '#8B5CF6', // Vibrant purple
+          50: '#F5F3FF',
+          100: '#EDE9FE',
+          200: '#DDD6FE',
+          300: '#C4B5FD',
+          400: '#A78BFA',
+          500: '#8B5CF6',
+          600: '#7C3AED',
+          700: '#6D28D9',
+          800: '#5B21B6',
+          900: '#4C1D95',
+          950: '#2E1065',
+          dark: '#6D28D9',
+          light: '#A78BFA',
         },
         secondary: {
-          DEFAULT: '#10b981',
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#34d399',
-          500: '#10b981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
-          950: '#022c22',
-          dark: '#059669',
-          light: '#34d399',
+          DEFAULT: '#EC4899', // Vibrant pink
+          50: '#FDF2F8',
+          100: '#FCE7F3',
+          200: '#FBCFE8',
+          300: '#F9A8D4',
+          400: '#F472B6',
+          500: '#EC4899',
+          600: '#DB2777',
+          700: '#BE185D',
+          800: '#9D174D',
+          900: '#831843',
+          950: '#500724',
+          dark: '#BE185D',
+          light: '#F472B6',
         },
         neural: {
-          light: '#8a9ef5',
-          DEFAULT: '#6366f1',
-          dark: '#4338ca',
-          glow: '#a5b4fc',
-          synapse: '#c7d2fe',
+          light: '#C4B5FD', // Updated to match new primary
+          DEFAULT: '#8B5CF6',
+          dark: '#6D28D9',
+          glow: '#A78BFA',
+          synapse: '#DDD6FE',
         },
         background: {
           light: '#f8fafc',
-          DEFAULT: '#0f172a',
-          dark: '#020617',
+          DEFAULT: '#0B0F19', // Darker, richer blue-black
+          dark: '#050712',
         },
         dark: {
-          DEFAULT: '#111827',
+          DEFAULT: '#0F172A', // Rich navy blue
           50: '#f9fafb',
           100: '#f3f4f6',
           200: '#e5e7eb',
@@ -64,11 +64,11 @@ module.exports = {
           500: '#6b7280',
           600: '#4b5563',
           700: '#374151',
-          800: '#1f2937',
-          900: '#111827',
-          950: '#030712',
-          lighter: '#1f2937',
-          darker: '#030712',
+          800: '#1E293B', // Slate 800
+          900: '#0F172A', // Slate 900
+          950: '#050712',
+          lighter: '#1E293B', // Lighter navy
+          darker: '#050712', // Almost black
         },
         light: {
           DEFAULT: '#f9fafb',
@@ -95,6 +95,13 @@ module.exports = {
         'glow': 'glow 1.5s ease-in-out infinite alternate',
         'spin-slow': 'spin 8s linear infinite',
         'blink': 'blink 1s linear infinite',
+        'shimmer': 'shimmer 2s linear infinite',
+        'bounce-slow': 'bounce 3s ease-in-out infinite',
+        'wave': 'wave 2.5s ease-in-out infinite',
+        'scale': 'scale 3s ease-in-out infinite',
+        'gradient-x': 'gradient-x 15s ease infinite',
+        'gradient-y': 'gradient-y 15s ease infinite',
+        'gradient-xy': 'gradient-xy 15s ease infinite',
       },
       keyframes: {
         float: {
@@ -102,12 +109,62 @@ module.exports = {
           '50%': { transform: 'translateY(-10px)' },
         },
         glow: {
-          '0%': { boxShadow: '0 0 5px rgba(99, 102, 241, 0.5)', opacity: 0.8 },
-          '100%': { boxShadow: '0 0 20px rgba(99, 102, 241, 0.8)', opacity: 1 },
+          '0%': { boxShadow: '0 0 5px rgba(139, 92, 246, 0.5)', opacity: 0.8 },
+          '100%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.8)', opacity: 1 },
         },
         blink: {
           '0%, 100%': { opacity: 1 },
           '50%': { opacity: 0 },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        wave: {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+        },
+        scale: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' },
+        },
+        'gradient-x': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left center'
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right center'
+          }
+        },
+        'gradient-y': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'top center'
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'bottom center'
+          }
+        },
+        'gradient-xy': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left top'
+          },
+          '25%': {
+            'background-size': '200% 200%',
+            'background-position': 'right top'
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right bottom'
+          },
+          '75%': {
+            'background-size': '200% 200%',
+            'background-position': 'left bottom'
+          }
         },
       },
       fontSize: {
@@ -119,10 +176,34 @@ module.exports = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(var(--tw-gradient-stops))',
         'neural-pattern': 'url("/images/neural-bg.svg")',
+        'grid-pattern': 'linear-gradient(to right, #8B5CF620 1px, transparent 1px), linear-gradient(to bottom, #8B5CF620 1px, transparent 1px)',
+        'dots-pattern': 'radial-gradient(#8B5CF615 1px, transparent 1px)',
+        'glow-conic': 'conic-gradient(from 180deg at 50% 50%, #8B5CF6 0deg, #EC4899 180deg, #8B5CF6 360deg)',
+        'hero-gradient': 'linear-gradient(to bottom right, #8B5CF610, #EC489910)',
+        'glass-gradient': 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01))',
       },
       gridTemplateColumns: {
         'auto-fill': 'repeat(auto-fill, minmax(250px, 1fr))',
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
+      backgroundSize: {
+        'size-200': '200% 200%',
+      },
+      borderWidth: {
+        '1': '1px',
+      },
+      boxShadow: {
+        'neon': '0 0 5px theme(colors.primary.400), 0 0 20px theme(colors.primary.500)',
+        'neon-secondary': '0 0 5px theme(colors.secondary.400), 0 0 20px theme(colors.secondary.500)',
+        'inner-white': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.05)',
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.36)',
+      },
+      screens: {
+        'xs': '475px',
       },
     },
   },

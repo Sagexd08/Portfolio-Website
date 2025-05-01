@@ -22,42 +22,44 @@ const useIntersectionObserver = (
   }: IntersectionOptions = {}
 ): boolean => {
   const [isIntersecting, setIsIntersecting] = useState<boolean>(false);
-  
+
   useEffect(() => {
     const element = elementRef?.current;
-    
-    // Early return if element ref is empty or browser doesn't support IntersectionObserver
-    if (!element || typeof IntersectionObserver !== 'function') {
-      return;
+
+    // Early return if element ref is empty, not a valid DOM element, or browser doesn't support IntersectionObserver
+    if (!element || !(element instanceof Element) || typeof IntersectionObserver !== 'function') {
+      return undefined;
     }
-    
+
     // If element is already visible and we want to freeze it, we're done
     if (isIntersecting && freezeOnceVisible) {
-      return;
+      return undefined;
     }
-    
+
     const observerCallback = (entries: IntersectionObserverEntry[]): void => {
       // We only care about the first entry (our target element)
       const [entry] = entries;
       setIsIntersecting(entry.isIntersecting);
     };
-    
+
     // Create the observer with the provided options
     const observer = new IntersectionObserver(observerCallback, {
       threshold,
       root,
       rootMargin,
     });
-    
+
     // Start observing the element
     observer.observe(element);
-    
+
     // Clean up the observer when component unmounts
     return () => {
-      observer.disconnect();
+      if (observer) {
+        observer.disconnect();
+      }
     };
   }, [elementRef, threshold, root, rootMargin, freezeOnceVisible, isIntersecting]);
-  
+
   return isIntersecting;
 };
 

@@ -44,6 +44,33 @@ const NeuronLoader: React.FC<NeuronLoaderProps> = ({ onLoadComplete }) => {
     canvas.height = window.innerHeight;
   });
 
+  // Create floating particles
+  const createParticles = () => {
+    const container = document.querySelector(`.${styles.loaderContainer}`);
+    if (!container) return;
+
+    // Create 50 particles
+    for (let i = 0; i < 50; i++) {
+      const particle = document.createElement('div');
+      particle.className = styles.particle;
+
+      // Random position
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.top = `${Math.random() * 100}%`;
+
+      // Random animation duration and delay
+      const duration = 10 + Math.random() * 20;
+      const delay = Math.random() * 10;
+      particle.style.animationDuration = `${duration}s`;
+      particle.style.animationDelay = `${delay}s`;
+
+      // Random transform origin for rotation
+      particle.style.transformOrigin = `${Math.random() * 100}% ${Math.random() * 100}%`;
+
+      container.appendChild(particle);
+    }
+  };
+
   // Initialize neural network
   useEffect(() => {
     if (canvasRef.current) {
@@ -69,6 +96,9 @@ const NeuronLoader: React.FC<NeuronLoaderProps> = ({ onLoadComplete }) => {
 
         // Start animation
         startAnimation();
+
+        // Create floating particles
+        setTimeout(createParticles, 100);
 
         // Cleanup
         return () => {
@@ -381,6 +411,9 @@ const NeuronLoader: React.FC<NeuronLoaderProps> = ({ onLoadComplete }) => {
             className={styles.neuralCanvas}
           />
 
+          {/* Brain scan line effect */}
+          <div className={styles.scanLine} />
+
           {/* Static neuron grid (as fallback and additional visual) */}
           <div className={styles.neuronGrid}>
             {Array.from({ length: 100 }).map((_, index) => (
@@ -391,7 +424,8 @@ const NeuronLoader: React.FC<NeuronLoaderProps> = ({ onLoadComplete }) => {
                 }`}
                 style={{
                   animationDelay: `${index * 0.02}s`,
-                }}
+                  '--index': index
+                } as React.CSSProperties}
               />
             ))}
           </div>

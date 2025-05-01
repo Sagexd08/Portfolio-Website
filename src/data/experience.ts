@@ -16,14 +16,13 @@ export const experiences: Experience[] = [
   },
   {
     id: 'exp-2',
-    company: 'DataWorks Technologies',
-    position: 'Machine Learning Engineer',
-    dateRange: 'Mar 2019 - Dec 2020',
+    company: 'Geeks For Geeks SNU Chapter',
+    position: 'Technical Executive',
+    dateRange: 'Mar 2025 - Present',
     description: [
-      'Built recommendation systems using collaborative filtering and deep learning approaches',
-      'Engineered features for time-series forecasting models in the financial sector',
-      'Optimized model performance, reducing inference time by 40% while maintaining accuracy',
-      'Created data pipelines for efficient model training and validation'
+      'Mentored 15+ student teams through the full AI/ML project lifecycle—helping them define problem statements, select appropriate algorithms, and design solution architectures—while providing in-depth code reviews and technical feedback to boost solution robustness and learning outcomes.',
+      'Guided teams in data preprocessing, model training, hyperparameter tuning, and deployment with Python, scikit-learn, TensorFlow, Flask, and Docker, enabling 10+ successful live demos and real-world application showcases'
+      
     ],
     technologies: ['PyTorch', 'Scikit-learn', 'Apache Spark', 'Docker', 'AWS SageMaker']
   },

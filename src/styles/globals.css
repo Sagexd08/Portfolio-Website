@@ -2,32 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 248, 248, 248;
-  --background-rgb: 18, 18, 18;
-}
+@layer base {
+  :root {
+    --foreground-rgb: 248, 248, 248;
+    --background-rgb: 18, 18, 18;
+  }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
+  html {
+    @apply scroll-smooth;
+    max-width: 100vw;
+  }
+  
+  body {
+    @apply overflow-x-hidden;
+    color: rgb(var(--foreground-rgb));
+    background: rgb(var(--background-rgb));
+  }
+  
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-[#1e1e1e];
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-[#4a4a4a] rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-[#555];
+  }
+  
+  /* For Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #4a4a4a #1e1e1e;
+  }
+  
+  /* Canvas styles */
+  canvas {
+    touch-action: none;
+  }
 }
 
 @layer components {
@@ -50,33 +78,116 @@ a {
   .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-secondary-400;
   }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-primary-500 to-secondary-400;
+  }
+  
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg;
+  }
+  
+  .card-3d {
+    @apply relative transition-all duration-700 transform-gpu preserve-3d;
+  }
+  
+  .card-3d-front,
+  .card-3d-back {
+    @apply absolute inset-0 backface-hidden;
+  }
+  
+  .card-3d-back {
+    @apply transform-gpu rotate-y-180;
+  }
+  
+  .neuron-firing {
+    @apply animate-glow opacity-0;
+    animation: neuron-fire 2s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  }
+
+  .synapse-line {
+    @apply h-px bg-primary-500;
+    animation: synapse-pulse 1.5s ease-in-out infinite;
+  }
+  
+  .loader-wrapper {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-background;
+  }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+@layer utilities {
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: #1e1e1e;
+/* Custom animations */
+@keyframes neuron-fire {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: #4a4a4a;
-  border-radius: 4px;
+@keyframes synapse-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scaleX(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+@keyframes text-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 
-/* Canvas styles */
-canvas {
-  touch-action: none;
-}
-
-/* For Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #4a4a4a #1e1e1e;
+@keyframes text-glitch {
+  0% {
+    clip-path: inset(40% 0 61% 0);
+    transform: translate(-2px, 2px);
+  }
+  20% {
+    clip-path: inset(92% 0 1% 0);
+    transform: translate(1px, 4px);
+  }
+  40% {
+    clip-path: inset(43% 0 1% 0);
+    transform: translate(-1px, -4px);
+  }
+  60% {
+    clip-path: inset(25% 0 58% 0);
+    transform: translate(2px, -2px);
+  }
+  80% {
+    clip-path: inset(54% 0 7% 0);
+    transform: translate(-3px, 4px);
+  }
+  100% {
+    clip-path: inset(58% 0 43% 0);
+    transform: translate(2px, -4px);
+  }
 }

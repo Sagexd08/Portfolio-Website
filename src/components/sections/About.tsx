@@ -1,22 +1,49 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 import Image from 'next/image';
 import SkillTag from '@/components/ui/SkillTag';
 import ParticleText from '@/components/animations/ParticleText';
 import MatrixRain from '@/components/animations/MatrixRain';
+import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 
-const About = () => {
-  const skills = [
-    { name: 'Machine Learning', level: 95, description: 'Expert in supervised and unsupervised learning algorithms' },
-    { name: 'Deep Learning', level: 90, description: 'Proficient with neural networks, CNN, RNN, and transformers' },
-    { name: 'Python', level: 95, description: 'Advanced Python programming with focus on data science libraries' },
-    { name: 'TensorFlow', level: 85, description: 'Building and deploying production-ready ML models' },
-    { name: 'PyTorch', level: 90, description: 'Research and prototyping of deep learning models' },
-    { name: 'Computer Vision', level: 80, description: 'Object detection, image segmentation, and classification' },
-    { name: 'NLP', level: 85, description: 'Text classification, sentiment analysis, and language generation' },
-    { name: 'MLOps', level: 75, description: 'CI/CD pipelines for ML, model monitoring, and deployment' },
-    { name: 'Data Engineering', level: 80, description: 'ETL processes, data pipelines, and big data technologies' },
-    { name: 'Cloud ML', level: 85, description: 'AWS SageMaker, Google AI Platform, and Azure ML' },
+interface AboutProps {
+  id?: string;
+}
+
+const About: React.FC<AboutProps> = ({ id = 'about' }) => {
+  const controls = useAnimation();
+  const sectionRef = useRef<HTMLElement>(null);
+  const isVisible = useIntersectionObserver(sectionRef, { threshold: 0.1 });
+  
+  if (isVisible) {
+    controls.start('visible');
+  }
+  
+  // Skills data with categories
+  const skillsData = [
+    { name: 'Machine Learning', level: 95, description: 'Expert in supervised and unsupervised learning algorithms', category: 'ML' },
+    { name: 'Deep Learning', level: 90, description: 'Proficient with neural networks, CNN, RNN, and transformers', category: 'ML' },
+    { name: 'Python', level: 95, description: 'Advanced Python programming with focus on data science libraries', category: 'Programming' },
+    { name: 'TensorFlow', level: 85, description: 'Building and deploying production-ready ML models', category: 'AI' },
+    { name: 'PyTorch', level: 90, description: 'Research and prototyping of deep learning models', category: 'AI' },
+    { name: 'Computer Vision', level: 80, description: 'Object detection, image segmentation, and classification', category: 'AI' },
+    { name: 'NLP', level: 85, description: 'Text classification, sentiment analysis, and language generation', category: 'AI' },
+    { name: 'MLOps', level: 75, description: 'CI/CD pipelines for ML, model monitoring, and deployment', category: 'Cloud' },
+    { name: 'Data Engineering', level: 80, description: 'ETL processes, data pipelines, and big data technologies', category: 'Data' },
+    { name: 'Cloud ML', level: 85, description: 'AWS SageMaker, Google AI Platform, and Azure ML', category: 'Cloud' },
   ];
+  
+  // Group skills by category
+  const skillsByCategory = skillsData.reduce((acc, skill) => {
+    if (!acc[skill.category]) {
+      acc[skill.category] = [];
+    }
+    acc[skill.category].push(skill);
+    return acc;
+  }, {} as Record<string, typeof skillsData>);
+  
+  // Order of categories to display
+  const categoryOrder = ['AI', 'ML', 'Programming', 'Data', 'Cloud'];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -38,12 +65,15 @@ const About = () => {
   };
 
   return (
-    <section id="about" className="bg-dark py-24">
+    <section ref={sectionRef} id={id} className="bg-dark py-24">
       <div className="container-section">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          animate={controls}
+          variants={{
+            visible: { opacity: 1, y: 0 },
+            hidden: { opacity: 0, y: 20 }
+          }}
           transition={{ duration: 0.6 }}
           className="mb-16 text-center"
         >
@@ -66,8 +96,11 @@ const About = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            animate={controls}
+            variants={{
+              visible: { opacity: 1, x: 0 },
+              hidden: { opacity: 0, x: -50 }
+            }}
             transition={{ duration: 0.6 }}
             className="relative"
           >
@@ -99,8 +132,11 @@ const About = () => {
           <div>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              animate={controls}
+              variants={{
+                visible: { opacity: 1, y: 0 },
+                hidden: { opacity: 0, y: 30 }
+              }}
               transition={{ duration: 0.6 }}
               className="mb-8"
             >
@@ -118,27 +154,50 @@ const About = () => {
 
             <motion.h3
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              animate={controls}
+              variants={{
+                visible: { opacity: 1, y: 0 },
+                hidden: { opacity: 0, y: 20 }
+              }}
               transition={{ duration: 0.6 }}
               className="text-2xl font-bold mb-6"
             >
               My Skills
             </motion.h3>
 
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              className="flex flex-wrap gap-3"
-            >
-              {skills.map((skill) => (
-                <motion.div key={skill.name} variants={itemVariants}>
-                  <SkillTag name={skill.name} level={skill.level} description={skill.description} />
-                </motion.div>
-              ))}
-            </motion.div>
+            <div className="space-y-6">
+              {categoryOrder.map((category, i) => {
+                const categorySkills = skillsByCategory[category];
+                if (!categorySkills?.length) return null;
+                
+                return (
+                  <motion.div
+                    key={category}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={controls}
+                    variants={{
+                      visible: { opacity: 1, y: 0 },
+                      hidden: { opacity: 0, y: 10 }
+                    }}
+                    transition={{ delay: 0.1 * i, duration: 0.6 }}
+                    className="mb-4"
+                  >
+                    <h4 className="text-sm font-semibold text-white/90 mb-2">{category}</h4>
+                    <div className="flex flex-wrap gap-3">
+                      {categorySkills.map(skill => (
+                        <motion.div key={skill.name} variants={itemVariants}>
+                          <SkillTag 
+                            name={skill.name} 
+                            level={skill.level} 
+                            description={skill.description} 
+                          />
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

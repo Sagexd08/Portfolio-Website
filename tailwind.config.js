@@ -6,16 +6,17 @@ module.exports = {
     './src/styles/**/*.{js,ts,jsx,tsx,css}',
     './src/utils/**/*.{js,ts,jsx,tsx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
           DEFAULT: '#6366f1',
-          50: '#f5f5ff',
-          100: '#ededfe',
-          200: '#dcdcfd',
-          300: '#c2c1fc',
-          400: '#9e9df9',
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
           500: '#6366f1',
           600: '#4f46e5',
           700: '#4338ca',
@@ -40,6 +41,18 @@ module.exports = {
           950: '#022c22',
           dark: '#059669',
           light: '#34d399',
+        },
+        neural: {
+          light: '#8a9ef5',
+          DEFAULT: '#6366f1',
+          dark: '#4338ca',
+          glow: '#a5b4fc',
+          synapse: '#c7d2fe',
+        },
+        background: {
+          light: '#f8fafc',
+          DEFAULT: '#0f172a',
+          dark: '#020617',
         },
         dark: {
           DEFAULT: '#111827',
@@ -73,19 +86,49 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['Fira Code', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'glow': 'glow 1.5s ease-in-out infinite alternate',
+        'spin-slow': 'spin 8s linear infinite',
+        'blink': 'blink 1s linear infinite',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
         },
+        glow: {
+          '0%': { boxShadow: '0 0 5px rgba(99, 102, 241, 0.5)', opacity: 0.8 },
+          '100%': { boxShadow: '0 0 20px rgba(99, 102, 241, 0.8)', opacity: 1 },
+        },
+        blink: {
+          '0%, 100%': { opacity: 1 },
+          '50%': { opacity: 0 },
+        },
+      },
+      fontSize: {
+        '2xs': '0.65rem',
+      },
+      transitionTimingFunction: {
+        'in-expo': 'cubic-bezier(0.95, 0.05, 0.795, 0.035)',
+        'out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'neural-pattern': 'url("/images/neural-bg.svg")',
+      },
+      gridTemplateColumns: {
+        'auto-fill': 'repeat(auto-fill, minmax(250px, 1fr))',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/aspect-ratio'),
+  ],
 };

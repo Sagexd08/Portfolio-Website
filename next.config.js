@@ -3,7 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['github.com'], // Add any external domains you'll load images from
+    domains: ['github.com', 'localhost'], // Add any external domains you'll load images from
+    formats: ['image/avif', 'image/webp'],
   },
   webpack: (config) => {
     // Support for GLTF files
@@ -17,7 +18,21 @@ const nextConfig = {
         },
       },
     });
+    
+    // GLSL shader support
+    config.module.rules.push({
+      test: /\.(glsl|vs|fs|vert|frag)$/,
+      exclude: /node_modules/,
+      use: ['raw-loader', 'glslify-loader'],
+    });
+    
     return config;
+  },
+  // Enable module aliases for better imports
+  experimental: {
+    appDir: false,
+    optimizeFonts: true,
+    optimizeCss: true,
   },
 };
 

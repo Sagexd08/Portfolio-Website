@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, MeshDistortMaterial, Trail, Float, useTexture, useGLTF, useAnimations } from '@react-three/drei';
+import { Sphere, MeshDistortMaterial, Trail, Float, useGLTF, useAnimations } from '@react-three/drei';
 import { Group, Vector3, MeshStandardMaterial, Color, Mesh, BufferGeometry } from 'three';
 import * as THREE from 'three';
 
@@ -295,10 +295,10 @@ const BrainModel = ({
   const [clicked, setClicked] = useState(false);
 
   // Load GLTF model if enabled
-  const { scene, animations } = useGLTFModel ? 
-    (useGLTF('/models/brain.glb') as unknown as GLTFResult) : 
+  const { scene, animations } = useGLTFModel ?
+    (useGLTF('/models/brain.glb') as unknown as GLTFResult) :
     { scene: null, animations: [] };
-  
+
   const { actions, names } = useAnimations(animations, groupRef);
 
   // Apply animations if they exist
@@ -307,7 +307,7 @@ const BrainModel = ({
       const animationName = names[0]; // Use the first animation
       actions[animationName]?.reset().play();
     }
-    
+
     return () => {
       if (useGLTFModel && names.length > 0) {
         const animationName = names[0];
@@ -317,12 +317,15 @@ const BrainModel = ({
   }, [actions, names, animate, useGLTFModel]);
 
   // Brain texture for realism when not using GLTF
-  const brainTexture = useTexture({
-    map: '/textures/brain_diffuse.jpg',
-    normalMap: '/textures/brain_normal.jpg',
-    roughnessMap: '/textures/brain_roughness.jpg',
-    aoMap: '/textures/brain_ao.jpg',
-  });
+  const brainTexture = useMemo(() => {
+    // Return empty texture properties to avoid errors with missing files
+    return {
+      map: null,
+      normalMap: null,
+      roughnessMap: null,
+      aoMap: null
+    };
+  }, []);
 
   // Define anatomical regions of the brain
   const brainRegions = useMemo(() => [
@@ -427,7 +430,7 @@ const BrainModel = ({
   // Generate random neural activity animation for GLTF model
   useEffect(() => {
     if (!groupRef.current || !useGLTFModel) return;
-    
+
     // Find all materials in the brain model
     const materials: THREE.Material[] = [];
     groupRef.current.traverse((child) => {
@@ -439,23 +442,23 @@ const BrainModel = ({
         }
       }
     });
-    
+
     // Set up pulse animation for emissive properties if available
     const animateMaterials = () => {
       const time = Date.now() * 0.001;
-      
+
       materials.forEach((material) => {
         if (material instanceof THREE.MeshStandardMaterial) {
           // Pulse the emissive intensity
           material.emissiveIntensity = emissiveIntensity + Math.sin(time * 2) * 0.2;
         }
       });
-      
+
       requestAnimationFrame(animateMaterials);
     };
-    
+
     let animationFrame = requestAnimationFrame(animateMaterials);
-    
+
     return () => {
       cancelAnimationFrame(animationFrame);
     };

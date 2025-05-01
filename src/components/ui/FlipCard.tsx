@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import styles from './FlipCard.module.css';
@@ -14,6 +14,7 @@ interface FlipCardProps {
   demoLink?: string;
   codeLink?: string;
   className?: string;
+  icon?: string;
   onFlip?: (isFlipped: boolean) => void;
 }
 
@@ -28,39 +29,51 @@ const FlipCard: React.FC<FlipCardProps> = ({
   demoLink,
   codeLink,
   className = '',
+  icon,
   onFlip,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [iconSvg, setIconSvg] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  
+
+  // Fetch SVG icon if provided
+  useEffect(() => {
+    if (icon) {
+      fetch(icon)
+        .then(res => res.text())
+        .then(svg => setIconSvg(svg))
+        .catch(err => console.error('Error loading icon:', err));
+    }
+  }, [icon]);
+
   const handleFlip = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setIsFlipped(!isFlipped);
     if (onFlip) onFlip(!isFlipped);
-    
+
     // Trigger custom neural animation event
     const event = new CustomEvent('neural-interaction', {
       detail: { type: 'card-flip', projectTitle: title }
     });
     document.dispatchEvent(event);
   };
-  
+
   return (
-    <div 
+    <div
       className={`${styles.flipCardContainer} ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       ref={cardRef}
     >
-      <motion.div 
+      <motion.div
         className={styles.flipCard}
         initial={false}
-        animate={{ 
+        animate={{
           rotateY: isFlipped ? 180 : 0,
           scale: isHovered ? 1.02 : 1,
-          boxShadow: isHovered 
-            ? '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)' 
+          boxShadow: isHovered
+            ? '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)'
             : '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1)'
         }}
         transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
@@ -77,7 +90,15 @@ const FlipCard: React.FC<FlipCardProps> = ({
               className={styles.cardImage}
             />
             <div className={styles.overlay}>
-              <h3 className={styles.title}>{title}</h3>
+              <div className="flex items-center gap-3 mb-2">
+                {iconSvg && (
+                  <div
+                    className="w-8 h-8 flex-shrink-0 bg-primary-500/20 rounded-full p-1.5 flex items-center justify-center text-primary-300"
+                    dangerouslySetInnerHTML={{ __html: iconSvg }}
+                  />
+                )}
+                <h3 className={styles.title}>{title}</h3>
+              </div>
               <p className={styles.shortDescription}>{description.length > 100 ? `${description.substring(0, 100)}...` : description}</p>
               <div className={styles.tags}>
                 {tags.slice(0, 3).map((tag, index) => (
@@ -89,11 +110,11 @@ const FlipCard: React.FC<FlipCardProps> = ({
               </div>
               <div className={styles.viewDetails}>
                 <span>View Details</span>
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 20 20" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 20 20"
                   fill="currentColor"
                 >
                   <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -102,13 +123,21 @@ const FlipCard: React.FC<FlipCardProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* Back of card */}
         <div className={`${styles.flipCardFace} ${styles.flipCardBack}`}>
           <div className={styles.backContent}>
-            <h3 className={styles.backTitle}>{title}</h3>
+            <div className="flex items-center gap-3 mb-4">
+              {iconSvg && (
+                <div
+                  className="w-10 h-10 flex-shrink-0 bg-primary-500/20 rounded-full p-2 flex items-center justify-center text-primary-300"
+                  dangerouslySetInnerHTML={{ __html: iconSvg }}
+                />
+              )}
+              <h3 className={styles.backTitle}>{title}</h3>
+            </div>
             <p className={styles.description}>{longDescription || description}</p>
-            
+
             {aiFeatures.length > 0 && (
               <div className={styles.featuresSection}>
                 <h4 className={styles.sectionTitle}>AI/ML Features</h4>
@@ -119,7 +148,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
                 </ul>
               </div>
             )}
-            
+
             {mlTechnologies.length > 0 && (
               <div className={styles.techSection}>
                 <h4 className={styles.sectionTitle}>Technologies</h4>
@@ -130,7 +159,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
                 </div>
               </div>
             )}
-            
+
             {tags.length > 0 && (
               <div className={styles.backTags}>
                 {tags.map((tag, index) => (
@@ -138,12 +167,12 @@ const FlipCard: React.FC<FlipCardProps> = ({
                 ))}
               </div>
             )}
-            
+
             <div className={styles.links}>
               {codeLink && (
-                <a 
-                  href={codeLink} 
-                  target="_blank" 
+                <a
+                  href={codeLink}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className={`${styles.link} ${styles.codeLink}`}
                   onClick={(e) => e.stopPropagation()}
@@ -155,9 +184,9 @@ const FlipCard: React.FC<FlipCardProps> = ({
                 </a>
               )}
               {demoLink && (
-                <a 
-                  href={demoLink} 
-                  target="_blank" 
+                <a
+                  href={demoLink}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className={`${styles.link} ${styles.demoLink}`}
                   onClick={(e) => e.stopPropagation()}
@@ -169,8 +198,8 @@ const FlipCard: React.FC<FlipCardProps> = ({
                 </a>
               )}
             </div>
-            
-            <button 
+
+            <button
               className={styles.closeButton}
               onClick={handleFlip}
               aria-label="Flip card back"

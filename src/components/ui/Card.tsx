@@ -11,6 +11,7 @@ interface CardProps {
   demoLink?: string;
   githubLink?: string;
   className?: string;
+  icon?: string;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -21,8 +22,20 @@ const Card: React.FC<CardProps> = ({
   demoLink,
   githubLink,
   className = '',
+  icon,
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [iconSvg, setIconSvg] = useState<string | null>(null);
+
+  // Fetch SVG icon if provided
+  useEffect(() => {
+    if (icon) {
+      fetch(icon)
+        .then(res => res.text())
+        .then(svg => setIconSvg(svg))
+        .catch(err => console.error('Error loading icon:', err));
+    }
+  }, [icon]);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -54,7 +67,15 @@ const Card: React.FC<CardProps> = ({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-dark-darker to-transparent opacity-80" />
             <div className="absolute bottom-0 left-0 p-6 w-full">
-              <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+              <div className="flex items-center gap-3 mb-2">
+                {iconSvg && (
+                  <div
+                    className="w-8 h-8 flex-shrink-0 bg-primary-500/20 rounded-full p-1.5 flex items-center justify-center text-primary-300"
+                    dangerouslySetInnerHTML={{ __html: iconSvg }}
+                  />
+                )}
+                <h3 className="text-xl font-bold text-white">{title}</h3>
+              </div>
               <div className="flex flex-wrap gap-2 mt-2">
                 {tags.slice(0, 3).map((tag, index) => (
                   <span
@@ -75,10 +96,18 @@ const Card: React.FC<CardProps> = ({
         </div>
 
         {/* Back of card */}
-        <div className="absolute w-full h-full backface-hidden rounded-xl overflow-hidden bg-dark-lighter rotateY-180 p-6 flex flex-col">
-          <h3 className="text-xl font-bold text-white mb-4">{title}</h3>
-          <p className="text-light/70 text-sm flex-grow">{description}</p>
-          
+        <div className="absolute w-full h-full backface-hidden rounded-xl overflow-hidden bg-dark-800/90 rotateY-180 p-6 flex flex-col glass-card">
+          <div className="flex items-center gap-3 mb-4">
+            {iconSvg && (
+              <div
+                className="w-10 h-10 flex-shrink-0 bg-primary-500/20 rounded-full p-2 flex items-center justify-center text-primary-300"
+                dangerouslySetInnerHTML={{ __html: iconSvg }}
+              />
+            )}
+            <h3 className="text-xl font-bold text-white">{title}</h3>
+          </div>
+          <p className="text-light/80 text-sm flex-grow leading-relaxed">{description}</p>
+
           <div className="flex flex-wrap gap-2 my-4">
             {tags.map((tag, index) => (
               <span
@@ -89,7 +118,7 @@ const Card: React.FC<CardProps> = ({
               </span>
             ))}
           </div>
-          
+
           <div className="flex gap-3 mt-auto">
             {githubLink && (
               <Button

@@ -38,6 +38,12 @@ const NeuronLoader: React.FC<NeuronLoaderProps> = ({ onLoadComplete }) => {
   const connectionsRef = useRef<Connection[]>([]);
   const lastActivationRef = useRef<number>(0);
 
+  // Function to update canvas size
+  const updateCanvasSize = useRef((canvas: HTMLCanvasElement) => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
   // Initialize neural network
   useEffect(() => {
     if (canvasRef.current) {
@@ -46,27 +52,32 @@ const NeuronLoader: React.FC<NeuronLoaderProps> = ({ onLoadComplete }) => {
 
       if (ctx) {
         // Set canvas dimensions
-        const updateCanvasSize = () => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
+        const handleResize = () => {
+          if (canvasRef.current) {
+            updateCanvasSize.current(canvasRef.current);
+          }
         };
 
-        updateCanvasSize();
-        window.addEventListener('resize', updateCanvasSize);
+        // Initial size
+        updateCanvasSize.current(canvas);
+
+        // Add resize listener
+        window.addEventListener('resize', handleResize);
 
         // Create neural network
         createNeuralNetwork();
 
         // Start animation
         startAnimation();
-      }
 
-      return () => {
-        window.removeEventListener('resize', updateCanvasSize);
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-      };
+        // Cleanup
+        return () => {
+          window.removeEventListener('resize', handleResize);
+          if (animationRef.current) {
+            cancelAnimationFrame(animationRef.current);
+          }
+        };
+      }
     }
   }, []);
 
@@ -181,6 +192,9 @@ const NeuronLoader: React.FC<NeuronLoaderProps> = ({ onLoadComplete }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Ensure canvas is properly sized
+    updateCanvasSize.current(canvas);
+
     const animate = (timestamp: number) => {
       if (!ctx) return;
 
@@ -190,9 +204,11 @@ const NeuronLoader: React.FC<NeuronLoaderProps> = ({ onLoadComplete }) => {
       // Activate random input neurons periodically
       if (timestamp - lastActivationRef.current > 300) {
         const inputNeurons = neuronsRef.current.filter(n => n.layer === 0);
-        const randomIndex = Math.floor(Math.random() * inputNeurons.length);
-        activateNeuron(inputNeurons[randomIndex].id, timestamp);
-        lastActivationRef.current = timestamp;
+        if (inputNeurons.length > 0) {
+          const randomIndex = Math.floor(Math.random() * inputNeurons.length);
+          activateNeuron(inputNeurons[randomIndex].id, timestamp);
+          lastActivationRef.current = timestamp;
+        }
       }
 
       // Draw connections

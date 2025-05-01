@@ -2,6 +2,10 @@
 
 An immersive portfolio website showcasing my skills and projects as an AI/ML developer with interactive 3D visualizations and animations.
 
+## Summary
+
+This portfolio is a Next.js-based application featuring interactive 3D visualizations of neural networks, a brain model, and data visualizations to showcase AI/ML projects. The site includes smooth animations, responsive design, and accessibility features to create an engaging user experience that highlights technical expertise in artificial intelligence and machine learning.
+
 ## Features
 
 - **Neural Network Boot Animation**: Simulated neuron initialization on page load
@@ -145,6 +149,30 @@ yarn dev
 ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Deployment Instructions
+
+1. **Environment Setup**
+   - Create a `.env.local` file in the project root
+   - Add any required environment variables for your deployment
+
+2. **Production Build**
+   ```bash
+   npm run build
+   npm run start
+   # or
+   yarn build
+   yarn start
+   ```
+
+3. **Deployment Options**
+   - **Vercel**: Connect your GitHub repository for automatic deployments
+   - **Netlify**: Connect your repository or upload the build folder
+   - **Custom Server**: Deploy the production build to any Node.js hosting service
+
+4. **Browser Support**
+   - Chrome, Firefox, Safari, Edge (latest versions)
+   - Mobile support with fallbacks for devices without WebGL
 
 ## Development Guidelines
 

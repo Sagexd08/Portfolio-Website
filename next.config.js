@@ -18,20 +18,19 @@ const nextConfig = {
         },
       },
     });
-    
+
     // GLSL shader support
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,
       exclude: /node_modules/,
       use: ['raw-loader', 'glslify-loader'],
     });
-    
+
     return config;
   },
-  // Enable module aliases for better imports
+  // Enable optimization features
+  optimizeFonts: true,
   experimental: {
-    appDir: false,
-    optimizeFonts: true,
     optimizeCss: true,
   },
 };

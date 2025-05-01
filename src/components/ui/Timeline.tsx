@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { Experience } from '@/types/index';
 
 interface TimelineProps {
@@ -7,25 +7,55 @@ interface TimelineProps {
 }
 
 const Timeline: React.FC<TimelineProps> = ({ experiences }) => {
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(timelineRef, { once: true, margin: "-100px" });
+  
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.3 
+      } 
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.6, 
+        ease: [0.215, 0.61, 0.355, 1] 
+      }
+    }
+  };
+  
   return (
-    <div className="relative">
-      {/* Vertical line */}
+    <div className="relative" ref={timelineRef}>
+      {/* Timeline center line */}
       <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-secondary to-primary transform -translate-x-1/2"></div>
       
-      <div className="space-y-12">
+      <motion.div
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+        variants={containerVariants}
+        className="space-y-12"
+      >
         {experiences.map((experience, index) => (
           <motion.div
             key={experience.id}
+            variants={itemVariants}
             className={`relative flex flex-col md:flex-row ${
               index % 2 === 0 ? 'md:flex-row-reverse' : ''
             }`}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            viewport={{ once: true, margin: "-100px" }}
           >
-            {/* Timeline dot */}
-            <div className="absolute left-0 md:left-1/2 top-0 w-4 h-4 rounded-full bg-primary transform -translate-x-1/2 z-10"></div>
+            {/* Timeline dot with pulse effect */}
+            <div className="absolute left-0 md:left-1/2 top-0 w-4 h-4 rounded-full bg-primary transform -translate-x-1/2 z-10">
+              <div className="absolute inset-0 animate-ping rounded-full bg-primary opacity-50"></div>
+            </div>
             
             {/* Date */}
             <div className="md:w-1/2 pb-8 md:pb-0 md:px-8 text-center md:text-right">
@@ -36,14 +66,17 @@ const Timeline: React.FC<TimelineProps> = ({ experiences }) => {
             
             {/* Content */}
             <div className="md:w-1/2 pl-8 md:px-8">
-              <div className="bg-dark-lighter p-6 rounded-lg shadow-lg">
+              <div className="bg-dark-lighter p-6 rounded-lg shadow-lg backdrop-blur-sm">
                 <h3 className="text-xl font-bold text-white">{experience.title}</h3>
                 <h4 className="text-lg text-primary-light mb-2">{experience.company}</h4>
                 <p className="text-sm text-light/70 mb-2">{experience.location}</p>
                 
-                <ul className="list-disc list-inside text-sm text-light/80 space-y-1 mt-4">
+                <ul className="space-y-2 mt-4">
                   {experience.description.map((item, i) => (
-                    <li key={i}>{item}</li>
+                    <li key={i} className="text-sm text-light/80 flex items-start">
+                      <span className="mr-2 mt-1.5 h-1 w-1 bg-primary rounded-full inline-block flex-shrink-0"></span>
+                      <span>{item}</span>
+                    </li>
                   ))}
                 </ul>
                 
@@ -61,7 +94,7 @@ const Timeline: React.FC<TimelineProps> = ({ experiences }) => {
             </div>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 };

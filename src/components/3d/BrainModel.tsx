@@ -1,8 +1,8 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, MeshDistortMaterial, Trail, Float, useTexture } from '@react-three/drei';
+import { Sphere, MeshDistortMaterial, Trail, Float, useTexture, useGLTF, useAnimations } from '@react-three/drei';
 import { Group, Vector3, MeshStandardMaterial, Color, Mesh, BufferGeometry } from 'three';
-import { noise } from '@/utils/perlin';
+import * as THREE from 'three';
 
 interface BrainModelProps {
   position?: [number, number, number];
@@ -16,6 +16,16 @@ interface BrainModelProps {
   color?: string;
   emissiveColor?: string;
   emissiveIntensity?: number;
+  animate?: boolean;
+  onClick?: () => void;
+  useGLTFModel?: boolean;
+}
+
+interface GLTFResult {
+  nodes: Record<string, THREE.Mesh>;
+  materials: Record<string, THREE.Material>;
+  animations: THREE.AnimationClip[];
+  scene: THREE.Group;
 }
 
 // Brain region component for anatomical accuracy
@@ -274,14 +284,39 @@ const BrainModel = ({
   distortionSpeed = 0.5,
   color = '#ff6b81',
   emissiveColor = '#ff4757',
-  emissiveIntensity = 0.5
+  emissiveIntensity = 0.5,
+  animate = true,
+  onClick,
+  useGLTFModel = false
 }: BrainModelProps) => {
   // Reference to the model
   const groupRef = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
 
-  // Brain texture for realism
+  // Load GLTF model if enabled
+  const { scene, animations } = useGLTFModel ? 
+    (useGLTF('/models/brain.glb') as unknown as GLTFResult) : 
+    { scene: null, animations: [] };
+  
+  const { actions, names } = useAnimations(animations, groupRef);
+
+  // Apply animations if they exist
+  useEffect(() => {
+    if (useGLTFModel && names.length > 0 && animate) {
+      const animationName = names[0]; // Use the first animation
+      actions[animationName]?.reset().play();
+    }
+    
+    return () => {
+      if (useGLTFModel && names.length > 0) {
+        const animationName = names[0];
+        actions[animationName]?.stop();
+      }
+    };
+  }, [actions, names, animate, useGLTFModel]);
+
+  // Brain texture for realism when not using GLTF
   const brainTexture = useTexture({
     map: '/textures/brain_diffuse.jpg',
     normalMap: '/textures/brain_normal.jpg',
@@ -389,24 +424,63 @@ const BrainModel = ({
     [-0.4, 0.3, 0]
   ] as [number, number, number][], []);
 
+  // Generate random neural activity animation for GLTF model
+  useEffect(() => {
+    if (!groupRef.current || !useGLTFModel) return;
+    
+    // Find all materials in the brain model
+    const materials: THREE.Material[] = [];
+    groupRef.current.traverse((child) => {
+      if (child instanceof THREE.Mesh && child.material) {
+        if (Array.isArray(child.material)) {
+          materials.push(...child.material);
+        } else {
+          materials.push(child.material);
+        }
+      }
+    });
+    
+    // Set up pulse animation for emissive properties if available
+    const animateMaterials = () => {
+      const time = Date.now() * 0.001;
+      
+      materials.forEach((material) => {
+        if (material instanceof THREE.MeshStandardMaterial) {
+          // Pulse the emissive intensity
+          material.emissiveIntensity = emissiveIntensity + Math.sin(time * 2) * 0.2;
+        }
+      });
+      
+      requestAnimationFrame(animateMaterials);
+    };
+    
+    let animationFrame = requestAnimationFrame(animateMaterials);
+    
+    return () => {
+      cancelAnimationFrame(animationFrame);
+    };
+  }, [useGLTFModel, emissiveIntensity]);
+
   // Animate the brain model
   useFrame((state, delta) => {
     if (groupRef.current) {
-      // Subtle rotation for animation
-      groupRef.current.rotation.y += delta * 0.05;
+      if (animate) {
+        // Subtle rotation for animation
+        groupRef.current.rotation.y += delta * 0.05;
 
-      // Add some subtle movement based on time
-      const time = state.clock.getElapsedTime();
-      if (groupRef.current.position.y !== undefined) {
-        groupRef.current.position.y = position[1] + Math.sin(time * pulseSpeed) * pulseIntensity;
-      }
+        // Add some subtle movement based on time
+        const time = state.clock.getElapsedTime();
+        if (groupRef.current.position.y !== undefined) {
+          groupRef.current.position.y = position[1] + Math.sin(time * pulseSpeed) * pulseIntensity;
+        }
 
-      // If clicked, add a pulse effect
-      if (clicked) {
-        const pulseEffect = 1 + Math.sin(time * 4) * 0.05;
-        groupRef.current.scale.x = currentScale[0] * pulseEffect;
-        groupRef.current.scale.y = currentScale[1] * pulseEffect;
-        groupRef.current.scale.z = currentScale[2] * pulseEffect;
+        // If clicked, add a pulse effect
+        if (clicked) {
+          const pulseEffect = 1 + Math.sin(time * 4) * 0.05;
+          groupRef.current.scale.x = currentScale[0] * pulseEffect;
+          groupRef.current.scale.y = currentScale[1] * pulseEffect;
+          groupRef.current.scale.z = currentScale[2] * pulseEffect;
+        }
       }
     }
   });
@@ -429,6 +503,7 @@ const BrainModel = ({
   const handleClick = () => {
     if (interactive) {
       setClicked(!clicked);
+      if (onClick) onClick();
     }
   };
 
@@ -458,84 +533,93 @@ const BrainModel = ({
       onPointerOut={handlePointerOut}
       onClick={handleClick}
     >
-      <Float speed={1} rotationIntensity={0.2} floatIntensity={0.3}>
-        {/* Base brain shape with realistic texture */}
-        <Sphere args={[1, 64, 64]} scale={[1, 1.2, 0.8]}>
-          <meshStandardMaterial
-            {...brainTexture}
-            color="#ff6b81"
-            emissive="#ff4757"
-            emissiveIntensity={0.2}
-            roughness={0.8}
-            metalness={0.1}
-          />
-        </Sphere>
-
-        {/* Brain sulci and gyri (wrinkles) for realism */}
-        <Sphere args={[1.02, 64, 64]} scale={[1, 1.2, 0.8]}>
-          <meshStandardMaterial
-            color="#ff6b81"
-            emissive="#ff4757"
-            emissiveIntensity={0.1}
-            roughness={1}
-            metalness={0}
-            wireframe
-            transparent
-            opacity={0.3}
-          />
-        </Sphere>
-
-        {/* Anatomical brain regions */}
-        {brainRegions.map((region, index) => (
-          <BrainRegion
-            key={`region-${index}`}
-            position={region.position as [number, number, number]}
-            scale={region.scale as [number, number, number]}
-            color={region.color}
-            emissiveColor={region.emissiveColor}
-            distort={region.distort}
-            pulsate={true}
-          />
-        ))}
-
-        {/* Neural nodes (neurons) */}
-        {neuralNodes.map((nodePos, index) => (
-          <NeuralNode
-            key={`node-${index}`}
-            position={nodePos}
-            size={0.08 + Math.random() * 0.05}
-            color="#ffffff"
-            emissiveColor="#6366f1"
-            pulseSpeed={0.5 + Math.random() * 1}
-          />
-        ))}
-
-        {/* Neural synapses (connections between neurons) */}
-        {neuralNodes.map((startPos, i) =>
-          neuralNodes.slice(i + 1).filter(() => Math.random() > 0.7).map((endPos, j) => (
-            <NeuralSynapse
-              key={`synapse-${i}-${j}`}
-              startPosition={startPos}
-              endPosition={endPos}
-              thickness={0.01 + Math.random() * 0.01}
-              color="#6366f1"
-              speed={0.5 + Math.random() * 1}
+      {useGLTFModel && scene ? (
+        // Render the GLTF model if available
+        <primitive object={scene.clone()} />
+      ) : (
+        // Otherwise render the procedural brain
+        <Float speed={1} rotationIntensity={0.2} floatIntensity={0.3}>
+          {/* Base brain shape with realistic texture */}
+          <Sphere args={[1, 64, 64]} scale={[1, 1.2, 0.8]}>
+            <meshStandardMaterial
+              {...brainTexture}
+              color="#ff6b81"
+              emissive="#ff4757"
+              emissiveIntensity={0.2}
+              roughness={0.8}
+              metalness={0.1}
             />
-          ))
-        )}
+          </Sphere>
 
-        {/* Add a trail effect to the brain when clicked */}
-        {clicked && (
-          <Trail
-            width={0.5}
-            length={8}
-            color={emissiveColor}
-            attenuation={(t) => t * t}
-          />
-        )}
-      </Float>
+          {/* Brain sulci and gyri (wrinkles) for realism */}
+          <Sphere args={[1.02, 64, 64]} scale={[1, 1.2, 0.8]}>
+            <meshStandardMaterial
+              color="#ff6b81"
+              emissive="#ff4757"
+              emissiveIntensity={0.1}
+              roughness={1}
+              metalness={0}
+              wireframe
+              transparent
+              opacity={0.3}
+            />
+          </Sphere>
+
+          {/* Anatomical brain regions */}
+          {brainRegions.map((region, index) => (
+            <BrainRegion
+              key={`region-${index}`}
+              position={region.position as [number, number, number]}
+              scale={region.scale as [number, number, number]}
+              color={region.color}
+              emissiveColor={region.emissiveColor}
+              distort={region.distort}
+              pulsate={true}
+            />
+          ))}
+
+          {/* Neural nodes (neurons) */}
+          {neuralNodes.map((nodePos, index) => (
+            <NeuralNode
+              key={`node-${index}`}
+              position={nodePos}
+              size={0.08 + Math.random() * 0.05}
+              color="#ffffff"
+              emissiveColor="#6366f1"
+              pulseSpeed={0.5 + Math.random() * 1}
+            />
+          ))}
+
+          {/* Neural synapses (connections between neurons) */}
+          {neuralNodes.map((startPos, i) =>
+            neuralNodes.slice(i + 1).filter(() => Math.random() > 0.7).map((endPos, j) => (
+              <NeuralSynapse
+                key={`synapse-${i}-${j}`}
+                startPosition={startPos}
+                endPosition={endPos}
+                thickness={0.01 + Math.random() * 0.01}
+                color="#6366f1"
+                speed={0.5 + Math.random() * 1}
+              />
+            ))
+          )}
+
+          {/* Add a trail effect to the brain when clicked */}
+          {clicked && (
+            <Trail
+              width={0.5}
+              length={8}
+              color={emissiveColor}
+              attenuation={(t) => t * t}
+            />
+          )}
+        </Float>
+      )}
     </group>
   );
 };
 
 export default BrainModel;
+
+// Preload the brain model
+useGLTF.preload('/models/brain.glb');

@@ -22,19 +22,26 @@ import { cn, scrollTo } from "@/lib/utils";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Carousel,
+  EnhancedCarousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselDots,
   type CarouselApi,
-} from "@/components/ui/carousel";
+} from "@/components/ui/enhanced-carousel";
+import ProjectCarousel from "@/components/ProjectCarousel";
 
 import VanillaTilt from "vanilla-tilt";
 import { motion } from "framer-motion";
 import BlinkingText from "@/components/BlinkingText";
 import ChatBot from "@/components/ChatBot";
 import SkillBar from "@/components/SkillBar";
+import ClientOnly from "@/components/ClientOnly";
+import dynamic from 'next/dynamic';
+
+// Import ThreeScene with no SSR
+const ThreeScene = dynamic(() => import('@/components/ThreeScene'), { ssr: false });
 
 const aboutStats = [
   { label: "Years of experience", value: "1.5+" },
@@ -44,28 +51,64 @@ const aboutStats = [
 
 const projects = [
   {
+    id: "soundscape-ai",
     title: "SoundScape-AI",
     description: "AI-powered music generation system using deep learning techniques",
+    fullDescription: "SoundScape-AI is an advanced music generation system that leverages deep learning to create original compositions. The system uses a combination of recurrent neural networks and transformers to understand musical patterns and generate coherent, pleasing melodies and harmonies.",
     icon: Music,
-    href: "https://github.com/Sagexd08/SoundScape-Ai",
+    githubLink: "https://github.com/Sagexd08/SoundScape-Ai",
+    liveLink: "https://github.com/Sagexd08/SoundScape-Ai",
+    image: "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206381/Screenshot_2025-05-02_224331_hs7z1l.png",
+    techStack: ["Python", "PyTorch", "TensorFlow", "Web Audio API"],
+    screenshots: [
+      "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206381/Screenshot_2025-05-02_224331_hs7z1l.png",
+      "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206381/Screenshot_2025-05-02_224331_hs7z1l.png"
+    ],
   },
   {
+    id: "sentinal-ai",
     title: "Sentinal-AI",
     description: "Security monitoring system with AI-based threat detection",
+    fullDescription: "Sentinal-AI is a comprehensive security monitoring system that uses artificial intelligence to detect potential threats in real-time. The system analyzes video feeds, sensor data, and network traffic to identify suspicious activities and alert security personnel.",
     icon: Shield,
-    href: "https://github.com/Sagexd08/Sentinal-AI",
+    githubLink: "https://github.com/Sagexd08/Sentinal-AI",
+    liveLink: "https://github.com/Sagexd08/Sentinal-AI",
+    image: "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206382/Screenshot_2025-05-02_224412_buquuv.png",
+    techStack: ["Python", "OpenCV", "TensorFlow", "Flask"],
+    screenshots: [
+      "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206382/Screenshot_2025-05-02_224412_buquuv.png",
+      "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206382/Screenshot_2025-05-02_224412_buquuv.png"
+    ],
   },
   {
+    id: "stock-prediction",
     title: "Stock Price Prediction",
     description: "LSTM model for predicting stock market trends and prices",
+    fullDescription: "This stock price prediction system uses Long Short-Term Memory (LSTM) neural networks to analyze historical stock data and predict future price movements. The model takes into account various factors including historical prices, trading volumes, and market indicators to make accurate predictions.",
     icon: TrendingUp,
-    href: "https://github.com/Sagexd08/Stock-Price-Prediction-LSTM-model",
+    githubLink: "https://github.com/Sagexd08/Stock-Price-Prediction-LSTM-model",
+    liveLink: "https://github.com/Sagexd08/Stock-Price-Prediction-LSTM-model",
+    image: "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206359/download_tqhmk3.jpg",
+    techStack: ["Python", "Keras", "Pandas", "Matplotlib"],
+    screenshots: [
+      "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206359/download_tqhmk3.jpg",
+      "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206359/download_tqhmk3.jpg"
+    ],
   },
   {
+    id: "community-pulse",
     title: "Community Pulse",
     description: "Social sentiment analysis platform for community insights",
+    fullDescription: "Community Pulse is a social sentiment analysis platform that helps organizations understand public opinion and community feedback. The system collects data from social media, surveys, and other sources, then uses natural language processing to analyze sentiment and extract actionable insights.",
     icon: Users,
-    href: "https://github.com/Sagexd08/Community-Pulse",
+    githubLink: "https://github.com/Sagexd08/Community-Pulse",
+    liveLink: "https://github.com/Sagexd08/Community-Pulse",
+    image: "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206381/Screenshot_2025-05-02_224721_oqhc0y.png",
+    techStack: ["Python", "NLTK", "SpaCy", "React", "D3.js"],
+    screenshots: [
+      "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206381/Screenshot_2025-05-02_224721_oqhc0y.png",
+      "https://res.cloudinary.com/dm9h4bawl/image/upload/v1746206381/Screenshot_2025-05-02_224721_oqhc0y.png"
+    ],
   },
 ];
 
@@ -105,9 +148,6 @@ const services = [
 export default function Home() {
   const refScrollContainer = useRef(null);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
-  const [current, setCurrent] = useState<number>(0);
-  const [count, setCount] = useState<number>(0);
 
 
   // handle scroll
@@ -153,27 +193,7 @@ export default function Home() {
 
 
 
-  // carousel effect
-  useEffect(() => {
-    if (!carouselApi) return;
 
-    const updateCurrentSlide = () => {
-      // Add 1 to make it 1-based instead of 0-based
-      setCurrent(carouselApi.selectedScrollSnap() + 1);
-      setCount(carouselApi.scrollSnapList().length);
-    };
-
-    // Initial update
-    updateCurrentSlide();
-
-    // Update on selection change
-    carouselApi.on("select", updateCurrentSlide);
-
-    // Cleanup
-    return () => {
-      carouselApi.off("select", updateCurrentSlide);
-    };
-  }, [carouselApi]);
 
   // card hover effect
   useEffect(() => {
@@ -277,7 +297,9 @@ export default function Home() {
             className="mt-14 h-full w-full xl:mt-0"
           >
             <Suspense fallback={<span>Loading...</span>}>
-              <Spline scene="/assets/scene.splinecode" />
+              <ClientOnly>
+                <Spline scene="/assets/scene.splinecode" />
+              </ClientOnly>
             </Suspense>
           </div>
         </section>
@@ -369,66 +391,38 @@ export default function Home() {
             </div>
           </div>
           <div data-scroll data-scroll-speed=".4" className="my-64">
-            <span className="text-gradient clash-grotesk text-sm font-semibold tracking-tighter">
-              ✨ Projects
-            </span>
-            <h2 className="mt-3 text-4xl font-semibold tracking-tight tracking-tighter xl:text-6xl">
-              Streamlined digital experiences.
-            </h2>
-            <p className="mt-1.5 text-base tracking-tight text-muted-foreground xl:text-lg">
-              I&apos;ve worked on a variety of projects, from small websites to
-              large-scale web applications. Here are some of my favorites:
-            </p>
+            <div className="relative">
+              <div className="absolute -top-10 -left-10 w-20 h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-xl"></div>
+              <div className="absolute -top-5 -right-5 w-16 h-16 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-full blur-lg"></div>
+              <div className="absolute inset-0 h-32 -z-10">
+                <ClientOnly>
+                  <ThreeScene type="heading" className="opacity-70" />
+                </ClientOnly>
+              </div>
+              <span className="text-gradient clash-grotesk text-sm font-semibold tracking-tighter relative z-10">
+                ✨ Projects
+              </span>
+              <h2 className="mt-3 text-4xl font-semibold tracking-tight tracking-tighter xl:text-6xl relative z-10">
+                Streamlined digital experiences.
+              </h2>
+              <p className="mt-1.5 text-base tracking-tight text-muted-foreground xl:text-lg relative z-10">
+                I&apos;ve worked on a variety of projects, from small websites to
+                large-scale web applications. Here are some of my favorites:
+              </p>
+            </div>
 
             {/* Enhanced Carousel */}
-            <div className="mt-14">
-              <Carousel
-                setApi={setCarouselApi}
-                className="w-full"
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-              >
-                <CarouselContent className="-ml-2 md:-ml-4">
-                  {projects.map((project) => (
-                    <CarouselItem key={project.title} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                      <Card id="tilt" className="relative overflow-hidden h-full">
-                        <CardHeader className="p-0">
-                          <Link href={project.href} target="_blank" passHref>
-                            <div className="flex aspect-video h-full w-full items-center justify-center rounded-t-md bg-gradient-to-br from-primary/20 to-secondary/20">
-                              {React.createElement(project.icon, {
-                                size: 80,
-                                className: "text-primary"
-                              })}
-                            </div>
-                          </Link>
-                        </CardHeader>
-                        <CardContent className="absolute bottom-0 w-full bg-background/50 backdrop-blur">
-                          <CardTitle className="border-t border-white/5 p-4">
-                            <div className="text-lg font-medium tracking-tight text-foreground">
-                              {project.title}
-                            </div>
-                            <div className="mt-1 text-sm font-normal tracking-tighter text-muted-foreground">
-                              {project.description}
-                            </div>
-                          </CardTitle>
-                        </CardContent>
-                      </Card>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <div className="flex items-center justify-center mt-4">
-                  <CarouselPrevious className="relative mr-2" />
-                  <div className="py-2 text-center text-sm text-muted-foreground">
-                    <span className="font-semibold">
-                      {current} / {count}
-                    </span>{" "}
-                    projects
-                  </div>
-                  <CarouselNext className="relative ml-2" />
-                </div>
-              </Carousel>
+            <div className="mt-14 relative">
+              {/* Background Elements */}
+              <div className="absolute -z-10 inset-0 overflow-hidden">
+                <ClientOnly>
+                  <ThreeScene type="carousel" className="opacity-70" />
+                </ClientOnly>
+              </div>
+
+              <div className="w-full px-4 md:px-8 max-w-7xl mx-auto">
+                <ProjectCarousel projects={projects} />
+              </div>
             </div>
           </div>
         </section>

@@ -22,7 +22,6 @@ This portfolio highlights Sohom's expertise in AI/ML development, featuring his 
 - **Styling**: Tailwind CSS, Framer Motion
 - **3D Elements**: React Three Fiber, Spline
 - **AI Integration**: Google Gemini API
-- **Deployment**: Firebase Hosting
 
 ## 🤖 Friday AI Assistant
 
@@ -59,17 +58,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to view the 
 
 ## 🚀 Deployment
 
-The portfolio is deployed using Firebase Hosting:
+To build the project for production:
 
-1. Build the project
-   ```bash
-   npm run build
-   ```
-
-2. Deploy to Firebase
-   ```bash
-   firebase deploy
-   ```
+```bash
+npm run build
+```
 
 ## 📞 Contact
 

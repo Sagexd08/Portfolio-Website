@@ -3,15 +3,23 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Float, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
+interface FloatingShapeProps {
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale: number;
+  color: string;
+  shape?: 'box' | 'sphere' | 'tetrahedron' | 'octahedron';
+}
+
 // Floating shape component
-const FloatingShape = ({ position, rotation, scale, color, shape = 'box' }) => {
-  const mesh = useRef();
-  
+const FloatingShape: React.FC<FloatingShapeProps> = ({ position, rotation, scale, color, shape = 'box' }) => {
+  const mesh = useRef<THREE.Mesh>(null);
+
   useFrame((state) => {
     if (mesh.current) {
       mesh.current.rotation.x += 0.003;
       mesh.current.rotation.y += 0.002;
-      
+
       // Subtle floating movement
       mesh.current.position.y += Math.sin(state.clock.elapsedTime * 0.5) * 0.002;
     }
@@ -30,15 +38,20 @@ const FloatingShape = ({ position, rotation, scale, color, shape = 'box' }) => {
   );
 };
 
+interface ParticleSystemProps {
+  count?: number;
+  color?: string;
+}
+
 // Particle system
-const ParticleSystem = ({ count = 100, color = '#ffffff' }) => {
-  const particles = useRef();
+const ParticleSystem: React.FC<ParticleSystemProps> = ({ count = 100, color = '#ffffff' }) => {
+  const particles = useRef<THREE.Points>(null);
   const { size, camera } = useThree();
-  
+
   // Create particles
   const particlePositions = [];
   const particleSizes = [];
-  
+
   for (let i = 0; i < count; i++) {
     particlePositions.push(
       (Math.random() - 0.5) * 20, // x
@@ -47,20 +60,23 @@ const ParticleSystem = ({ count = 100, color = '#ffffff' }) => {
     );
     particleSizes.push(Math.random() * 0.05 + 0.01);
   }
-  
+
   useFrame((state) => {
     if (particles.current) {
       particles.current.rotation.y += 0.0005;
-      
+
       // Update particle positions
-      const positions = particles.current.geometry.attributes.position.array;
-      for (let i = 0; i < positions.length; i += 3) {
-        positions[i + 1] += Math.sin(state.clock.elapsedTime * 0.2 + i) * 0.001;
+      const geometry = particles.current.geometry;
+      if (geometry.attributes.position) {
+        const positions = geometry.attributes.position.array as Float32Array;
+        for (let i = 0; i < positions.length; i += 3) {
+          positions[i + 1] += Math.sin(state.clock.elapsedTime * 0.2 + i) * 0.001;
+        }
+        geometry.attributes.position.needsUpdate = true;
       }
-      particles.current.geometry.attributes.position.needsUpdate = true;
     }
   });
-  
+
   return (
     <points ref={particles}>
       <bufferGeometry>
@@ -88,10 +104,14 @@ const ParticleSystem = ({ count = 100, color = '#ffffff' }) => {
   );
 };
 
+interface CameraControllerProps {
+  mousePosition: React.RefObject<{x: number, y: number}>;
+}
+
 // Camera controller with parallax effect
-const CameraController = ({ mousePosition }) => {
+const CameraController: React.FC<CameraControllerProps> = ({ mousePosition }) => {
   const { camera } = useThree();
-  
+
   useFrame(() => {
     if (mousePosition.current) {
       // Smooth camera movement based on mouse position
@@ -100,46 +120,46 @@ const CameraController = ({ mousePosition }) => {
       camera.lookAt(0, 0, 0);
     }
   });
-  
+
   return null;
 };
 
 // Main component
 const ThreeBackground = () => {
   const mousePosition = useRef({ x: 0, y: 0 });
-  
+
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       // Normalize mouse position
       mousePosition.current = {
         x: (e.clientX / window.innerWidth) * 2 - 1,
         y: -(e.clientY / window.innerHeight) * 2 + 1
       };
     };
-    
+
     window.addEventListener('mousemove', handleMouseMove);
-    
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
-  
+
   return (
     <div className="absolute inset-0 -z-10">
       <Canvas>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={0.5} />
-        
+
         <CameraController mousePosition={mousePosition} />
         <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={50} />
-        
+
         {/* Floating shapes */}
         <FloatingShape position={[-3, 1, -2]} rotation={[0, 0, 0]} scale={0.8} color="#7980fe" shape="tetrahedron" />
         <FloatingShape position={[2, -1, -1]} rotation={[0, 0, 0]} scale={0.6} color="#9A70FF" shape="octahedron" />
         <FloatingShape position={[0, 2, -3]} rotation={[0, 0, 0]} scale={0.7} color="#838aff" shape="sphere" />
         <FloatingShape position={[3, 0, -2]} rotation={[0, 0, 0]} scale={0.5} color="#7980fe" shape="box" />
         <FloatingShape position={[-2, -2, -1]} rotation={[0, 0, 0]} scale={0.4} color="#9A70FF" shape="tetrahedron" />
-        
+
         {/* Particle system */}
         <ParticleSystem count={200} color="#ffffff" />
       </Canvas>

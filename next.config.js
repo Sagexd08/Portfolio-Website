@@ -30,13 +30,15 @@ const config = withPWA({
     defaultLocale: "en",
   },
 
-  // Enable static exports for Firebase hosting
-  output: 'export',
-
-  // Configure allowed image domains and disable optimization for static export
+  // Configure allowed image sources
   images: {
-    domains: ['res.cloudinary.com'],
-    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '**',
+      },
+    ],
   },
 });
 

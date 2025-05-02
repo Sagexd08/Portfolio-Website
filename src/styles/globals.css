@@ -107,4 +107,21 @@
   .animate-blink {
     animation: blink 1s infinite;
   }
+
+  /* Enhanced carousel styles */
+  .carousel-card {
+    @apply relative overflow-hidden h-full border border-white/10 shadow-xl transition-all duration-500;
+  }
+
+  .carousel-card:hover {
+    @apply border-primary/30 shadow-primary/20 shadow-2xl;
+  }
+
+  .carousel-card-gradient {
+    @apply absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 transition-opacity duration-500;
+  }
+
+  .carousel-card:hover .carousel-card-gradient {
+    @apply opacity-100;
+  }
 }

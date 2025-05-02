@@ -1,8 +1,9 @@
 # 🖥️ Sohom Chatterjee - AI/ML Developer Portfolio
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md) [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#) 
+
 A modern, responsive portfolio website showcasing Sohom Chatterjee's skills, projects, and experience as an AI/ML Developer.
 
-![Portfolio Preview]()
 
 ## About
 
@@ -42,10 +43,10 @@ To run this portfolio locally, you need:
 ### Installation
 ```bash
 # Clone the repository
-$ git clone https://github.com/Sagexd08/portfolio.git
+$ git clone https://github.com/Sagexd08/Portfolio-Website.git
 
 # Navigate to the project directory
-$ cd portfolio
+$ cd Portfolio-Website
 
 # Install dependencies
 $ npm install
@@ -64,8 +65,39 @@ To build the project for production:
 npm run build
 ```
 
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/your-feature-name`)
+3. Make your changes and commit (`git commit -m 'Add some feature'`)
+4. Push to the branch (`git push origin feature/your-feature-name`)
+5. Open a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## 🙏 Acknowledgements
+
+- Thanks to the creators of React, Next.js, Tailwind CSS, Framer Motion, React Three Fiber, and Spline for their amazing tools.
+- Inspired by modern portfolio designs and AI chatbot integrations.
+
 ## 📞 Contact
 
 - **Email**: sohomchatterjee07@gmail.com
 - **LinkedIn**: [Sohom Chatterjee](https://www.linkedin.com/in/sohom-chatterjee-61828a312)
 - **GitHub**: [Sagexd08](https://github.com/Sagexd08)
+
+## 🧪 Tests
+
+Currently, there are no automated tests for this project. Contributions to add tests are appreciated.
+
+## ❓ FAQ
+
+**Q:** How do I run the project locally?  
+**A:** Follow the instructions in the "Getting Started" section above.
+
+**Q:** Who do I contact for support?  
+**A:** Use the contact information provided above.

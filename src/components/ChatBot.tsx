@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { generateResponseWithIntent } from '@/lib/gemini-intent';
+import { generateResponse } from '@/lib/chatbot';
 import { FaRobot, FaUser, FaPaperPlane } from 'react-icons/fa';
 
 interface Message {
@@ -34,8 +34,8 @@ const SimpleChatBot: React.FC = () => {
     setIsTyping(true);
 
     try {
-      // Get response with intent detection using Gemini
-      const response = await generateResponseWithIntent(input);
+      // Get response from our simple chatbot
+      const response = generateResponse(input);
 
       // Add bot response
       setMessages(prev => [...prev, { text: response, isUser: false }]);

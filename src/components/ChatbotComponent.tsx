@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateResponse } from '@/lib/chatbot';
-import { FaRobot, FaUser, FaPaperPlane } from 'react-icons/fa';
+import { FaRobot, FaUser, FaPaperPlane, FaTimes } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import ThemeToggle from './ThemeToggle';
 
 interface Message {
   text: string;
@@ -68,46 +70,56 @@ const ChatbotComponent: React.FC = () => {
   return (
     <>
       {/* Chat button */}
-      <button
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg"
+      <motion.button
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-primary to-indigo-600 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300"
         onClick={() => setIsOpen(!isOpen)}
         tabIndex={0}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
       >
         <FaRobot className="h-6 w-6" />
-      </button>
+      </motion.button>
 
       {/* Chat window */}
-      {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[350px] flex-col rounded-lg bg-background shadow-xl">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[350px] flex-col rounded-lg bg-background shadow-2xl border border-gray-200 dark:border-gray-800"
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
           {/* Header */}
-          <div className="flex items-center justify-between rounded-t-lg bg-primary p-4 text-primary-foreground">
-            <div className="flex items-center space-x-2">
-              <FaRobot className="h-6 w-6" />
-              <h3 className="text-lg font-medium">Friday</h3>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="rounded-full p-1 hover:bg-primary-foreground/20"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+          <div className="flex items-center justify-between rounded-t-lg bg-gradient-to-r from-primary to-indigo-600 p-4 text-primary-foreground">
+            <div className="flex items-center space-x-3">
+              <motion.div
+                initial={{ rotate: 0 }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: 0 }}
+                className="bg-white/20 p-2 rounded-full"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+                <FaRobot className="h-5 w-5" />
+              </motion.div>
+              <div>
+                <h3 className="text-lg font-bold">Friday</h3>
+                <p className="text-xs text-primary-foreground/80">Sohom's AI Assistant</p>
+              </div>
+            </div>
+            <motion.button
+              onClick={() => setIsOpen(false)}
+              className="rounded-full p-2 hover:bg-white/20 transition-colors duration-200"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <FaTimes className="h-5 w-5" />
+            </motion.button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900/20 backdrop-blur-sm">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -115,18 +127,23 @@ const ChatbotComponent: React.FC = () => {
                   message.isUser ? 'justify-end' : 'justify-start'
                 }`}
               >
-                <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`max-w-[80%] rounded-lg p-3 shadow-sm ${
                     message.isUser
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
+                      ? 'bg-gradient-to-r from-primary to-indigo-600 text-primary-foreground'
+                      : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
                   }`}
                 >
                   <div className="flex items-start space-x-2">
                     {!message.isUser && (
-                      <FaRobot className="mt-1 h-4 w-4 text-primary" />
+                      <div className="flex-shrink-0 bg-primary/10 p-1.5 rounded-full">
+                        <FaRobot className="h-3.5 w-3.5 text-primary" />
+                      </div>
                     )}
-                    <div className="whitespace-pre-wrap">
+                    <div className={`whitespace-pre-wrap ${!message.isUser ? 'text-gray-800 dark:text-gray-200' : ''}`}>
                       {message.text.split('\n').map((line, i) => (
                         <React.Fragment key={i}>
                           {line}
@@ -135,17 +152,26 @@ const ChatbotComponent: React.FC = () => {
                       ))}
                     </div>
                     {message.isUser && (
-                      <FaUser className="mt-1 h-4 w-4 text-primary-foreground" />
+                      <div className="flex-shrink-0 bg-white/20 p-1.5 rounded-full">
+                        <FaUser className="h-3.5 w-3.5 text-primary-foreground" />
+                      </div>
                     )}
                   </div>
-                </div>
+                </motion.div>
               </div>
             ))}
             {isTyping && (
-              <div className="mb-4 flex justify-start">
-                <div className="max-w-[80%] rounded-lg bg-muted p-3">
+              <motion.div 
+                className="mb-4 flex justify-start"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <div className="max-w-[80%] rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 shadow-sm">
                   <div className="flex items-center space-x-2">
-                    <FaRobot className="h-4 w-4 text-primary" />
+                    <div className="flex-shrink-0 bg-primary/10 p-1.5 rounded-full">
+                      <FaRobot className="h-3.5 w-3.5 text-primary" />
+                    </div>
                     <div className="typing-indicator">
                       <span></span>
                       <span></span>
@@ -153,13 +179,13 @@ const ChatbotComponent: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSubmit} className="border-t p-4">
+          <form onSubmit={handleSubmit} className="border-t border-gray-200 dark:border-gray-800 p-4 bg-white dark:bg-gray-900">
             <div className="flex items-center space-x-2">
               <input
                 type="text"
@@ -167,20 +193,23 @@ const ChatbotComponent: React.FC = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="Ask me anything about Sohom..."
-                className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex-1 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
                 disabled={isTyping}
               />
-              <button
+              <motion.button
                 type="submit"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-primary to-indigo-600 text-primary-foreground hover:shadow-md disabled:opacity-50 transition-all duration-200"
                 disabled={isTyping || !input.trim()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <FaPaperPlane className="h-4 w-4" />
-              </button>
+              </motion.button>
             </div>
           </form>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Typing indicator styles */}
       <style jsx>{`
@@ -189,13 +218,13 @@ const ChatbotComponent: React.FC = () => {
           align-items: center;
         }
         .typing-indicator span {
-          height: 8px;
-          width: 8px;
+          height: 6px;
+          width: 6px;
           margin: 0 1px;
           background-color: #7B82FE;
           border-radius: 50%;
           display: inline-block;
-          opacity: 0.4;
+          opacity: 0.6;
           animation: typing 1.5s infinite ease-in-out;
         }
         .typing-indicator span:nth-child(1) {
@@ -210,15 +239,15 @@ const ChatbotComponent: React.FC = () => {
         @keyframes typing {
           0% {
             transform: translateY(0px);
-            opacity: 0.4;
+            opacity: 0.6;
           }
           50% {
             transform: translateY(-5px);
-            opacity: 0.8;
+            opacity: 1;
           }
           100% {
             transform: translateY(0px);
-            opacity: 0.4;
+            opacity: 0.6;
           }
         }
       `}</style>

@@ -35,7 +35,7 @@ import ProjectCarousel from "@/components/ProjectCarousel";
 import VanillaTilt from "vanilla-tilt";
 import { motion } from "framer-motion";
 import BlinkingText from "@/components/BlinkingText";
-import SimpleChatBot from "@/components/SimpleChatBot";
+import ChatbotComponent from "@/components/ChatbotComponent";
 import SkillBar from "@/components/SkillBar";
 import ClientOnly from "@/components/ClientOnly";
 import dynamic from 'next/dynamic';
@@ -515,7 +515,7 @@ export default function Home() {
       </div>
 
       {/* Chatbot */}
-      <SimpleChatBot />
+      <ChatbotComponent />
 
     </Container>
   );

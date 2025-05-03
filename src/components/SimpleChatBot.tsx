@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateResponse } from '@/lib/simple-bot';
 import { FaRobot, FaUser, FaPaperPlane } from 'react-icons/fa';
+import ThemeToggle from './ThemeToggle';
 
 interface Message {
   text: string;

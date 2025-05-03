@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaUser, FaPaperPlane } from 'react-icons/fa';
+import ThemeToggle from './ThemeToggle';
 
 interface Message {
   text: string;
@@ -154,32 +155,35 @@ Is there something specific about Sohom you'd like to know? You can ask about hi
 
       {/* Chat window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[350px] flex-col rounded-lg bg-background shadow-xl">
+        <div className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[350px] flex-col rounded-lg bg-background dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-800">
           {/* Header */}
           <div className="flex items-center justify-between rounded-t-lg bg-primary p-4 text-primary-foreground">
             <div className="flex items-center space-x-2">
               <FaRobot className="h-6 w-6" />
               <h3 className="text-lg font-medium">Friday</h3>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="rounded-full p-1 hover:bg-primary-foreground/20"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="flex items-center space-x-2">
+              <ThemeToggle />
+              <button
+                onClick={() => setIsOpen(false)}
+                className="rounded-full p-1 hover:bg-primary-foreground/20"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
@@ -202,7 +206,7 @@ Is there something specific about Sohom you'd like to know? You can ask about hi
                     {!message.isUser && (
                       <FaRobot className="mt-1 h-4 w-4 text-primary" />
                     )}
-                    <div className="whitespace-pre-wrap">
+                    <div className="whitespace-pre-wrap dark:text-white">
                       {message.text.split('\n').map((line, i) => (
                         <React.Fragment key={i}>
                           {line}

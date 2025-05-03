@@ -69,7 +69,7 @@ Projects:
 Personal Interests:
 - Artificial Intelligence and Machine Learning
 - Computer Vision applications
-- Cloud Development
+- Game Development
 - Web Development
   `,
   
@@ -89,7 +89,7 @@ Location:
   `,
   
   github: `
-Sohom Chatterjee (Sagexd08):
+GitHub Profile for Sohom Chatterjee (Sagexd08):
 Bio: "I am an undergraduate B.Tech Computer Science and Engineering student at Sister Nivedita University."
 Location: Kolkata, India
 Followers: 1
@@ -174,35 +174,37 @@ Creative AI Interests:
 function detectIntent(prompt: string): string {
   const lowerPrompt = prompt.toLowerCase();
   
-  // Check for specific intents
-  if (/help|assist|what can you do|capabilities|features/i.test(lowerPrompt)) {
+  // Check for specific intents with improved pattern matching
+  if (/help|assist|what can you do|capabilities|features|how can you help/i.test(lowerPrompt)) {
     return "help";
-  } else if (/github|repositories|repos|code|projects/i.test(lowerPrompt)) {
+  } else if (/github|repositories|repos|code|projects|coding|portfolio/i.test(lowerPrompt)) {
     return "github";
-  } else if (/linkedin|profile|work experience|job|career/i.test(lowerPrompt)) {
+  } else if (/linkedin|profile|work experience|job|career|professional/i.test(lowerPrompt)) {
     return "linkedin";
-  } else if (/education|university|school|college|degree|study/i.test(lowerPrompt)) {
+  } else if (/education|university|school|college|degree|study|academic/i.test(lowerPrompt)) {
     return "education";
-  } else if (/skills|abilities|technologies|tech stack|programming|languages/i.test(lowerPrompt)) {
+  } else if (/skills|abilities|technologies|tech stack|programming|languages|tools/i.test(lowerPrompt)) {
     return "skills";
-  } else if (/contact|email|reach out|get in touch/i.test(lowerPrompt)) {
+  } else if (/contact|email|reach out|get in touch|social media/i.test(lowerPrompt)) {
     return "contact";
-  } else if (/location|where|city|country|based/i.test(lowerPrompt)) {
+  } else if (/location|where|city|country|based|live|from/i.test(lowerPrompt)) {
     return "location";
   } else if (/ai|ml|machine learning|deep learning|artificial intelligence|neural network/i.test(lowerPrompt)) {
     return "ai_ml";
-  } else if (/pytorch|tensorflow|framework|library|prefer/i.test(lowerPrompt)) {
+  } else if (/pytorch|tensorflow|framework|library|prefer|tools/i.test(lowerPrompt)) {
     return "frameworks";
-  } else if (/experience|work|professional|background/i.test(lowerPrompt)) {
+  } else if (/experience|work|professional|background|history/i.test(lowerPrompt)) {
     return "experience";
-  } else if (/passion|interest|enjoy|like|love/i.test(lowerPrompt)) {
+  } else if (/passion|interest|enjoy|like|love|hobby/i.test(lowerPrompt)) {
     return "interests";
-  } else if (/music|creative|generation|art/i.test(lowerPrompt)) {
+  } else if (/music|creative|generation|art|artistic/i.test(lowerPrompt)) {
     return "creative_ai";
-  } else if (/computer vision|cv|image|vision|recognition/i.test(lowerPrompt)) {
+  } else if (/computer vision|cv|image|vision|recognition|detection/i.test(lowerPrompt)) {
     return "computer_vision";
-  } else if (/nlp|natural language|text|language processing/i.test(lowerPrompt)) {
+  } else if (/nlp|natural language|text|language processing|sentiment/i.test(lowerPrompt)) {
     return "nlp";
+  } else if (/who|about|tell me about|background|intro/i.test(lowerPrompt)) {
+    return "about";
   }
   
   return "general";
@@ -210,14 +212,15 @@ function detectIntent(prompt: string): string {
 
 // Generate a response based on intent
 export function generateResponse(prompt: string): string {
-  // Detect the intent of the user's question
-  const intent = detectIntent(prompt);
-  console.log("Detected intent:", intent);
-  
-  // Generate a response based on the detected intent
-  let response = "";
-  
-  switch (intent) {
+  try {
+    // Detect the intent of the user's question
+    const intent = detectIntent(prompt);
+    console.log("Detected intent:", intent);
+    
+    // Generate a response based on the detected intent
+    let response = "";
+    
+    switch (intent) {
     case "help":
       response = `I'm Friday, Sohom's AI assistant. I can tell you about:
 - Sohom's background and education
@@ -309,6 +312,12 @@ Sohom has developed several computer vision projects, including face detection a
 Sohom has skills in Natural Language Processing and text analysis techniques.`;
       break;
       
+    case "about":
+      response = `${sohomInfo.basic}
+${sohomInfo.background}
+Sohom is an AI/ML Developer with 1.5+ years of experience who is passionate about creating intelligent solutions that solve real-world problems.`;
+      break;
+      
     default:
       // General response for when no specific intent is detected
       response = `${sohomInfo.basic}
@@ -319,5 +328,19 @@ Is there something specific about Sohom you'd like to know? You can ask about hi
       break;
   }
   
-  return response;
+    return response;
+  } catch (error) {
+    console.error("Error in generateResponse:", error);
+    
+    // Provide a fallback response if something goes wrong
+    return `I can answer your question based on what I know about Sohom:
+
+Sohom Chatterjee is an AI/ML Developer with 1.5+ years of experience in machine learning, deep learning, and data science. He's currently pursuing a B.Tech in Computer Science and Engineering at Sister Nivedita University.
+
+He's passionate about AI applications in solving real-world problems and prefers PyTorch over TensorFlow for deep learning projects. His skills include Python, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, and Data Analysis.
+
+Some of his notable projects include Face Detection, FaceGuard (attendance system), and Emotion Detection applications.
+
+Is there something specific about Sohom you'd like to know more about?`;
+  }
 }

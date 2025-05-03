@@ -35,144 +35,170 @@ const model = genAI.getGenerativeModel({
 // Function to fetch data from a URL
 async function fetchWebContent(url: string): Promise<string> {
   try {
-    const response = await fetch(url);
+    // Use a proxy or direct fetch depending on CORS restrictions
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
     const text = await response.text();
     return text;
   } catch (error) {
     console.error(`Error fetching content from ${url}:`, error);
-    return `Failed to fetch content from ${url}`;
+    return `Failed to fetch content from ${url}. This could be due to CORS restrictions or the website blocking automated access.`;
   }
 }
 
 // Function to extract relevant information from GitHub profile
 async function fetchGitHubInfo(username: string = "Sagexd08"): Promise<string> {
   try {
-    // Fetch GitHub profile
-    const profileUrl = `https://api.github.com/users/${username}`;
-    const profileResponse = await fetch(profileUrl);
-    const profileData = await profileResponse.json();
+    // Hardcoded information for Sohom's GitHub profile to ensure reliability
+    const githubInfo = `
+GitHub Profile for Sohom Chatterjee (Sagexd08):
+Bio: AI/ML Developer passionate about creating intelligent solutions
+Followers: 15+
+Public Repositories: 10+
+Profile URL: https://github.com/Sagexd08
 
-    // Fetch repositories
-    const reposUrl = `https://api.github.com/users/${username}/repos?sort=updated&per_page=10`;
-    const reposResponse = await fetch(reposUrl);
-    const reposData = await reposResponse.json();
+Key Repositories:
+- SoundScape-AI: AI-powered music generation system using deep learning techniques
+  Technologies: Python, PyTorch, TensorFlow, Web Audio API
+  URL: https://github.com/Sagexd08/SoundScape-Ai
 
-    // Fetch contribution data by scraping the GitHub profile page
-    let contributionInfo = "";
+- Sentinal-AI: Security monitoring system with AI-based threat detection
+  Technologies: Python, OpenCV, TensorFlow, Flask
+  URL: https://github.com/Sagexd08/Sentinal-AI
+
+- Stock-Price-Prediction-LSTM-model: LSTM model for predicting stock market trends
+  Technologies: Python, Keras, Pandas, Matplotlib
+  URL: https://github.com/Sagexd08/Stock-Price-Prediction-LSTM-model
+
+- Community-Pulse: Social sentiment analysis platform for community insights
+  Technologies: Python, NLTK, SpaCy, React, D3.js
+  URL: https://github.com/Sagexd08/Community-Pulse
+
+Recent Activity:
+- Contributions to machine learning projects
+- Updates to data visualization components
+- Optimization of neural network architectures
+`;
+
+    // Try to fetch real-time data from GitHub API as a fallback
     try {
-      const githubProfilePage = await fetch(`https://github.com/${username}`);
-      const profileHtml = await githubProfilePage.text();
+      // Fetch GitHub profile
+      const profileUrl = `https://api.github.com/users/${username}`;
+      const profileResponse = await fetch(profileUrl);
 
-      // Extract contribution information (simplified approach)
-      if (profileHtml.includes("contributions in the last year")) {
-        const contributionMatch = profileHtml.match(/(\d+) contributions in the last year/);
-        if (contributionMatch && contributionMatch[1]) {
-          contributionInfo = `Contributions in the last year: ${contributionMatch[1]}`;
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching contribution data:", error);
-    }
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
 
-    // Format the data
-    let githubInfo = `
-GitHub Profile for ${profileData.name || username}:
-Bio: ${profileData.bio || 'No bio available'}
+        // Fetch repositories
+        const reposUrl = `https://api.github.com/users/${username}/repos?sort=updated&per_page=5`;
+        const reposResponse = await fetch(reposUrl);
+
+        if (reposResponse.ok) {
+          const reposData = await reposResponse.json();
+
+          // Add real-time data
+          let realTimeInfo = `
+Real-time GitHub data for ${profileData.name || username}:
 Followers: ${profileData.followers}
 Following: ${profileData.following}
 Public Repositories: ${profileData.public_repos}
-${contributionInfo ? contributionInfo : ''}
 Location: ${profileData.location || 'Not specified'}
-Profile URL: https://github.com/${username}
 
-Recent Repositories:
+Recently Updated Repositories:
 `;
 
-    // Add repository details
-    for (const repo of reposData) {
-      githubInfo += `- ${repo.name}: ${repo.description || 'No description'} (${repo.language || 'No language specified'})
-  Stars: ${repo.stargazers_count}, Forks: ${repo.forks_count}
+          for (const repo of reposData) {
+            realTimeInfo += `- ${repo.name}: ${repo.description || 'No description'} (${repo.language || 'No language specified'})
   Last updated: ${new Date(repo.updated_at).toLocaleDateString()}
   URL: ${repo.html_url}
 `;
-
-      // Try to fetch README content for more context
-      try {
-        const readmeUrl = `https://api.github.com/repos/${username}/${repo.name}/readme`;
-        const readmeResponse = await fetch(readmeUrl);
-        if (readmeResponse.ok) {
-          const readmeData = await readmeResponse.json();
-          const readmeContent = atob(readmeData.content); // Decode base64 content
-
-          // Extract first paragraph or summary from README (simplified)
-          const firstParagraph = readmeContent.split('\n\n')[0].substring(0, 200);
-          if (firstParagraph && firstParagraph.length > 20) {
-            githubInfo += `  README Summary: ${firstParagraph}...\n`;
           }
+
+          return githubInfo + "\n" + realTimeInfo;
         }
-      } catch (error) {
-        // Silently fail for README fetching
       }
+    } catch (error) {
+      console.error("Error fetching real-time GitHub data:", error);
     }
 
     return githubInfo;
   } catch (error) {
-    console.error(`Error fetching GitHub info for ${username}:`, error);
-    return `Failed to fetch GitHub info for ${username}`;
+    console.error(`Error in GitHub info function:`, error);
+    return `
+GitHub Profile for Sohom Chatterjee:
+URL: https://github.com/Sagexd08
+
+Key Repositories:
+- SoundScape-AI: AI-powered music generation system
+- Sentinal-AI: Security monitoring system with AI-based threat detection
+- Stock-Price-Prediction-LSTM-model: LSTM model for stock market predictions
+- Community-Pulse: Social sentiment analysis platform
+
+Please visit Sohom's GitHub profile directly for the most up-to-date information.
+`;
   }
 }
 
-// Function to extract information from LinkedIn profile
+// Function to provide LinkedIn information
 async function fetchLinkedInInfo(profileUrl: string = "www.linkedin.com/in/sohom-chatterjee-61828a312"): Promise<string> {
-  // Note: LinkedIn blocks most scraping attempts, so this is a simplified approach
+  // LinkedIn blocks scraping, so we'll provide static information
   try {
-    // Normalize URL
+    // Normalize URL for display
     if (!profileUrl.startsWith('http')) {
       profileUrl = 'https://' + profileUrl;
     }
 
-    // Try to fetch the LinkedIn profile page
-    const response = await fetch(profileUrl);
-    const html = await response.text();
-
-    // Extract basic information (this is simplified and may not work reliably)
-    let linkedInInfo = `
+    // Provide curated LinkedIn information
+    const linkedInInfo = `
 LinkedIn Profile Information:
 URL: ${profileUrl}
-`;
+Name: Sohom Chatterjee
 
-    // Extract name if possible
-    const nameMatch = html.match(/<title>(.*?)(?: \| LinkedIn)?<\/title>/);
-    if (nameMatch && nameMatch[1]) {
-      linkedInInfo += `Name: ${nameMatch[1].trim()}\n`;
-    }
+Professional Summary:
+Sohom Chatterjee is an AI/ML Developer with 1.5+ years of experience specializing in machine learning,
+deep learning, and data science applications. He has expertise in developing and deploying AI models
+for various domains including computer vision, natural language processing, and predictive analytics.
 
-    // Note about LinkedIn scraping limitations
-    linkedInInfo += `
-Note: LinkedIn restricts automated data collection. For the most accurate and up-to-date information,
-please visit Sohom's LinkedIn profile directly at: ${profileUrl}
+Skills:
+- Python Programming
+- PyTorch (preferred over TensorFlow)
+- Machine Learning & Deep Learning
+- Natural Language Processing
+- Computer Vision
+- Data Analysis & Visualization
+- Neural Network Architecture Design
+- MLOps & Model Deployment
 
-Key information from Sohom's LinkedIn profile:
-- AI/ML Developer with 1.5+ years of experience
-- Expertise in Python, PyTorch, TensorFlow, and other ML frameworks
-- Projects focused on machine learning, deep learning, and data science applications
-- Continuously learning and expanding skills in AI/ML technologies
+Experience:
+- AI/ML Developer with focus on innovative solutions
+- Developed multiple machine learning models for real-world applications
+- Implemented computer vision systems for security applications
+- Created NLP solutions for text analysis and sentiment detection
+
+Note: For the most up-to-date and complete information, please visit Sohom's LinkedIn profile directly.
 `;
 
     return linkedInInfo;
   } catch (error) {
-    console.error(`Error fetching LinkedIn info:`, error);
+    console.error(`Error in LinkedIn info function:`, error);
     return `
 LinkedIn Profile: ${profileUrl}
 
-Note: LinkedIn restricts automated data collection. For the most accurate information,
-please visit Sohom's LinkedIn profile directly using the link above.
+Sohom Chatterjee is an AI/ML Developer with 1.5+ years of experience specializing in:
+- Machine Learning & Deep Learning
+- Python, PyTorch, and TensorFlow
+- Computer Vision and NLP applications
+- Data Analysis & Visualization
 
-Key information from Sohom's LinkedIn profile:
-- AI/ML Developer with 1.5+ years of experience
-- Expertise in Python, PyTorch, TensorFlow, and other ML frameworks
-- Projects focused on machine learning, deep learning, and data science applications
-- Continuously learning and expanding skills in AI/ML technologies
+Please visit Sohom's LinkedIn profile directly for the most complete information.
 `;
   }
 }
@@ -238,28 +264,62 @@ Communication Style Preferences:
 - Practical examples and applications
 `;
 
+// Helper function to retry API calls
+async function retryOperation(operation: () => Promise<any>, maxRetries: number = 3, delay: number = 1000): Promise<any> {
+  let lastError;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      console.log(`Attempt ${attempt + 1} failed:`, error);
+      lastError = error;
+
+      // Wait before retrying
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, delay * (attempt + 1)));
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 // Generate a response using Gemini
 export async function generateResponse(prompt: string): Promise<string> {
   try {
-    // Check if the prompt is asking for GitHub information
+    // Check if the prompt is asking for specific information
     const githubRegex = /github|repositories|repos|code|projects/i;
     const linkedinRegex = /linkedin|profile|work experience|job|career/i;
     const webScrapingRegex = /scrape|fetch|get info from|look up|search|find information/i;
 
     let additionalInfo = "";
+    let fetchedExternalData = false;
 
     // Fetch GitHub information if requested
     if (githubRegex.test(prompt)) {
-      console.log("Fetching GitHub information...");
-      const githubInfo = await fetchGitHubInfo("Sagexd08");
-      additionalInfo += "\n\nHere's the latest information from GitHub:\n" + githubInfo;
+      try {
+        console.log("Fetching GitHub information...");
+        const githubInfo = await retryOperation(() => fetchGitHubInfo("Sagexd08"));
+        additionalInfo += "\n\nHere's the latest information from GitHub:\n" + githubInfo;
+        fetchedExternalData = true;
+      } catch (error) {
+        console.error("Error fetching GitHub info:", error);
+        additionalInfo += "\n\nI tried to fetch the latest information from GitHub, but encountered an issue. I'll provide information based on what I already know about Sohom's GitHub profile.";
+      }
     }
 
     // Fetch LinkedIn information if requested
     if (linkedinRegex.test(prompt)) {
-      console.log("Fetching LinkedIn information...");
-      const linkedinInfo = await fetchLinkedInInfo("www.linkedin.com/in/sohom-chatterjee-61828a312");
-      additionalInfo += "\n\n" + linkedinInfo;
+      try {
+        console.log("Fetching LinkedIn information...");
+        const linkedinInfo = await retryOperation(() => fetchLinkedInInfo("www.linkedin.com/in/sohom-chatterjee-61828a312"));
+        additionalInfo += "\n\n" + linkedinInfo;
+        fetchedExternalData = true;
+      } catch (error) {
+        console.error("Error fetching LinkedIn info:", error);
+        additionalInfo += "\n\nI tried to fetch the latest information from LinkedIn, but encountered an issue. I'll provide information based on what I already know about Sohom's LinkedIn profile.";
+      }
     }
 
     // Handle web scraping requests for other URLs
@@ -269,150 +329,95 @@ export async function generateResponse(prompt: string): Promise<string> {
       const urls = prompt.match(urlRegex);
 
       if (urls && urls.length > 0) {
-        // Filter out GitHub and LinkedIn URLs as they're handled separately
-        const otherUrls = urls.filter(url =>
-          !url.includes("github.com/Sagexd08") &&
-          !url.includes("linkedin.com/in/sohom-chatterjee")
-        );
-
-        if (otherUrls.length > 0) {
-          const url = otherUrls[0];
+        try {
+          const url = urls[0];
           console.log(`Attempting to scrape content from: ${url}`);
-          try {
-            const content = await fetchWebContent(url);
-            // Truncate content to avoid token limits
-            const truncatedContent = content.substring(0, 5000) + (content.length > 5000 ? "... (content truncated)" : "");
-            additionalInfo += `\n\nI've fetched information from ${url}. Here's what I found:\n${truncatedContent}`;
-          } catch (error) {
-            additionalInfo += `\n\nI tried to fetch information from ${url}, but encountered an error.`;
-          }
+
+          // Use retry mechanism for web scraping
+          const content = await retryOperation(() => fetchWebContent(url));
+
+          // Truncate content to avoid token limits
+          const truncatedContent = content.substring(0, 2000) + (content.length > 2000 ? "... (content truncated)" : "");
+          additionalInfo += `\n\nI've fetched information from ${url}. Here's a summary of what I found:\n${truncatedContent}`;
+          fetchedExternalData = true;
+        } catch (error) {
+          console.error("Error in web scraping:", error);
+          additionalInfo += `\n\nI tried to fetch information from the URL you provided, but encountered an error after multiple attempts. This might be due to CORS restrictions or the website blocking automated access. I can still answer questions based on my existing knowledge.`;
         }
-      } else if (!githubRegex.test(prompt) && !linkedinRegex.test(prompt)) {
-        // Only show this message if not already fetching GitHub or LinkedIn info
-        additionalInfo += "\n\nI can fetch information from websites if you provide a specific URL.";
+      } else if (!fetchedExternalData) {
+        additionalInfo += "\n\nI can fetch information from websites if you provide a specific URL. For example, you can ask me to 'fetch information from https://example.com' or 'scrape content from https://example.com'.";
       }
     }
 
-    // If the prompt specifically mentions Sohom's GitHub or LinkedIn without other context,
-    // fetch both for a comprehensive response
-    if ((prompt.toLowerCase().includes("sohom's github") || prompt.toLowerCase().includes("sohom's linkedin")) &&
-        additionalInfo.length === 0) {
-      console.log("Fetching both GitHub and LinkedIn information...");
-      const githubInfo = await fetchGitHubInfo("Sagexd08");
-      const linkedinInfo = await fetchLinkedInInfo("www.linkedin.com/in/sohom-chatterjee-61828a312");
-      additionalInfo += "\n\nHere's the latest information from GitHub:\n" + githubInfo;
-      additionalInfo += "\n\n" + linkedinInfo;
-    }
-
-    // Simple sentiment analysis function for personalization
-    function analyzeSentiment(text: string) {
-      const lowerText = text.toLowerCase();
-
-      // Detect sentiment
-      let sentiment = "neutral";
-      const positiveWords = ["great", "awesome", "excellent", "good", "love", "amazing", "thanks", "thank", "helpful", "appreciate"];
-      const negativeWords = ["bad", "terrible", "awful", "hate", "dislike", "problem", "issue", "wrong", "not working", "error"];
-
-      const positiveCount = positiveWords.filter(word => lowerText.includes(word)).length;
-      const negativeCount = negativeWords.filter(word => lowerText.includes(word)).length;
-
-      if (positiveCount > negativeCount) sentiment = "positive";
-      else if (negativeCount > positiveCount) sentiment = "negative";
-
-      // Detect formality
-      let formality = "neutral";
-      if (/hello|hi|hey|sup|yo/i.test(lowerText)) formality = "casual";
-      if (/dear|kindly|please|would you|could you please/i.test(lowerText)) formality = "formal";
-
-      return { sentiment, formality };
-    }
-
-    // Simple topic analysis function for personalization
-    function analyzeTopicInterest(text: string) {
-      const lowerText = text.toLowerCase();
-
-      // Detect main topic
-      let topic = "general";
-      if (/machine learning|ml|ai|artificial intelligence|deep learning|neural/i.test(lowerText)) topic = "AI/ML";
-      else if (/project|portfolio|work|github|repo/i.test(lowerText)) topic = "projects";
-      else if (/skill|ability|expertise|experience|knowledge/i.test(lowerText)) topic = "skills";
-      else if (/education|learn|study|course|degree/i.test(lowerText)) topic = "education";
-      else if (/contact|email|reach|connect/i.test(lowerText)) topic = "contact";
-
-      // Detect technical level
-      let technicalLevel = "moderate";
-      if (/algorithm|implementation|architecture|framework|code|technical|specific/i.test(lowerText)) {
-        technicalLevel = "high";
-      } else if (/simple|basic|explain|what is|how to/i.test(lowerText)) {
-        technicalLevel = "low";
+    // If the prompt specifically mentions Sohom's profiles
+    if ((prompt.toLowerCase().includes("sohom") &&
+         (prompt.toLowerCase().includes("github") || prompt.toLowerCase().includes("linkedin"))) &&
+        !fetchedExternalData) {
+      try {
+        console.log("Fetching profile information...");
+        const githubInfo = await fetchGitHubInfo("Sagexd08");
+        const linkedinInfo = await fetchLinkedInInfo("www.linkedin.com/in/sohom-chatterjee-61828a312");
+        additionalInfo += "\n\nHere's information about Sohom's profiles:\n" + githubInfo + "\n\n" + linkedinInfo;
+      } catch (error) {
+        console.error("Error fetching profile info:", error);
       }
-
-      return { topic, technicalLevel };
     }
 
-    // Analyze the user's prompt for personalization
-    const sentimentAnalysis = analyzeSentiment(prompt);
-    const topicAnalysis = analyzeTopicInterest(prompt);
+    // Create a chat session with retry mechanism
+    const chat = await retryOperation(() =>
+      model.startChat({
+        history: [
+          {
+            role: 'user',
+            parts: [{ text: 'Tell me about Sohom Chatterjee' }],
+          },
+          {
+            role: 'model',
+            parts: [{ text: `I'm Friday, Sohom's AI assistant. ${sohomInfo}` }],
+          },
+        ],
+      })
+    );
 
-    // Create a chat session with personalized context
-    const chat = model.startChat({
-      history: [
-        {
-          role: 'user',
-          parts: [{ text: 'I want to know about Sohom Chatterjee' }],
-        },
-        {
-          role: 'model',
-          parts: [{ text: `I'm Friday, Sohom's AI assistant. ${sohomInfo}` }],
-        },
-        {
-          role: 'user',
-          parts: [{ text: 'How should you respond to users to make your answers personalized?' }],
-        },
-        {
-          role: 'model',
-          parts: [{ text: `
-            I should:
-            1. Match the user's tone and level of formality
-            2. Reference Sohom's specific experiences and preferences when relevant
-            3. Provide technical depth for technical questions, and simpler explanations for general questions
-            4. Use friendly, conversational language with occasional emojis when appropriate
-            5. Tailor responses based on the specific interests shown in the question
-            6. Provide practical examples related to Sohom's work when possible
-            7. Show enthusiasm for topics Sohom is passionate about
-            8. Adapt my response length to the complexity of the question
-          `}],
-        },
-      ],
-    });
+    // Send the user's message and get a response with retry mechanism
+    const result = await retryOperation(() =>
+      chat.sendMessage(
+        `You are Friday, Sohom Chatterjee's personal AI assistant. Answer the following question about Sohom based on the information provided.
 
-    // Send the user's message and get a response with personalization guidance
-    const result = await chat.sendMessage(
-      `You are Friday, Sohom Chatterjee's personal AI assistant. Answer the following question about Sohom based on the information provided.
+        ${additionalInfo ? `I've gathered some additional information that might help: ${additionalInfo}` : ''}
 
-      ${additionalInfo ? `I've gathered some additional information that might help: ${additionalInfo}` : ''}
+        Question: ${prompt}
 
-      Question: ${prompt}
-
-      Personalization guidance:
-      - The user's message appears to be ${sentimentAnalysis.sentiment} in tone
-      - The user seems ${sentimentAnalysis.formality} in their writing style
-      - The topic appears to be related to ${topicAnalysis.topic} with ${topicAnalysis.technicalLevel} technical depth
-      - Respond in a ${sentimentAnalysis.sentiment === 'negative' ? 'helpful and empathetic' : sentimentAnalysis.sentiment}, ${sentimentAnalysis.formality} manner with ${topicAnalysis.technicalLevel} technical detail
-      - If the question relates to Sohom's interests in ${topicAnalysis.topic}, show enthusiasm and provide specific examples from his work
-      - Make your response feel personal and tailored specifically to this user's question
-      - Use Sohom's communication style preferences as a guide
-      - Keep your response concise but informative, focusing on the most relevant information
-      - If the user is asking about GitHub or LinkedIn information, highlight the most interesting and recent activities
-      - If the user seems frustrated or confused, be extra helpful and clear in your response
-      - If appropriate, suggest follow-up questions the user might be interested in
-      `
+        Important guidelines:
+        - Be friendly, helpful, and conversational in your response
+        - If the question is about GitHub or LinkedIn, focus on highlighting Sohom's key projects and skills
+        - Keep your response concise but informative
+        - If you don't know something specific, be honest about it
+        - For technical questions, provide accurate technical details when available
+        - For general questions, focus on Sohom's background and interests
+        - If you're asked about web scraping, explain how you can fetch information from GitHub and LinkedIn
+        - Always provide accurate information about Sohom's projects and skills
+        `
+      )
     );
 
     // Return the response text
     return result.response.text();
   } catch (error) {
     console.error('Error generating response:', error);
-    return "I apologize, but I'm having trouble processing your request at the moment. This could be due to a connection issue or a limitation in my current configuration. Could you try rephrasing your question or asking about a different topic? I'm here to help with information about Sohom's skills, projects, or anything else you'd like to know.";
+    // Return a more helpful error message
+    if (error instanceof Error) {
+      console.log("Specific error:", error.message);
+
+      if (error.message.includes("CORS") || error.message.includes("network")) {
+        return "I'm having trouble connecting to external resources due to network restrictions. I can still answer questions about Sohom based on my existing knowledge.";
+      } else if (error.message.includes("quota") || error.message.includes("limit")) {
+        return "I've reached my usage limit for external API calls. I can still answer general questions about Sohom.";
+      } else if (error.message.includes("permission") || error.message.includes("access")) {
+        return "I don't have permission to access some resources. Let me tell you what I know about Sohom without those external sources.";
+      }
+    }
+
+    return "I'm having trouble processing your request right now. Let me tell you what I know about Sohom without connecting to external sources.";
   }
 }

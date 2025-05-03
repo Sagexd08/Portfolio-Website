@@ -69,10 +69,12 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ count = 100, color = '#
       const geometry = particles.current.geometry;
       if (geometry.attributes.position) {
         const positions = geometry.attributes.position.array as Float32Array;
-        for (let i = 0; i < positions.length; i += 3) {
-          positions[i + 1] += Math.sin(state.clock.elapsedTime * 0.2 + i) * 0.001;
+        if (positions) {
+          for (let i = 0; i < positions.length; i += 3) {
+            positions[i + 1] += Math.sin(state.clock.elapsedTime * 0.2 + i) * 0.001;
+          }
+          geometry.attributes.position.needsUpdate = true;
         }
-        geometry.attributes.position.needsUpdate = true;
       }
     }
   });

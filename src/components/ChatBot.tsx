@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Bot, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 import { generateResponse } from '@/lib/gemini';
 
 // Friday AI Assistant - Enhanced with Google's Gemini API
@@ -67,7 +68,7 @@ const Message: React.FC<MessageProps> = ({ text, isUser, isTyping = false }) => 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { text: "Hello! I'm Friday, Sohom's AI assistant. How can I help you today?", isUser: false }
+    { text: "Hello! I'm Friday, Sohom's AI assistant. I've been upgraded with new capabilities!\n\n• I can now fetch real-time information from Sohom's GitHub and LinkedIn profiles\n• I can scrape web content from URLs you provide\n• I've been configured to provide more personalized answers based on your questions\n\nAsk me about Sohom's projects, skills, or provide a URL to explore. How can I help you today?", isUser: false }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -129,7 +130,7 @@ const ChatBot = () => {
     } catch (error) {
       console.error('Error generating response:', error);
       setMessages(prev => [...prev, {
-        text: "I'm having trouble connecting to my knowledge base. Please try again later.",
+        text: "I apologize, but I'm having trouble processing your request at the moment. This could be due to a connection issue or a limitation in my current configuration. Could you try rephrasing your question or asking about a different topic? I'm here to help with information about Sohom's skills, projects, or anything else you'd like to know.",
         isUser: false
       }]);
     } finally {
@@ -167,15 +168,23 @@ const ChatBot = () => {
             {/* Chat header */}
             <div className="border-b border-border/40 bg-background/90 p-4">
               <div className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-primary" />
+                <div className="relative h-6 w-6 overflow-hidden">
+                  <Image
+                    src="/assets/gemini-icon.svg"
+                    alt="Gemini AI"
+                    width={24}
+                    height={24}
+                    className="object-contain"
+                  />
+                </div>
                 <h3 className="text-lg font-medium">Friday AI Assistant</h3>
-                <span className="flex items-center gap-1 text-xs text-yellow-400">
-                  <Sparkles className="h-3 w-3" />
-                  <span>Gemini</span>
+                <span className="flex items-center gap-1 text-xs bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text font-semibold">
+                  <Sparkles className="h-3 w-3 text-blue-400" />
+                  <span>Powered by Gemini</span>
                 </span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Ask me about Sohom's skills, projects, or experience
+                Ask me about Sohom's skills, projects, GitHub repos, LinkedIn profile, or provide a URL to explore
               </p>
             </div>
 

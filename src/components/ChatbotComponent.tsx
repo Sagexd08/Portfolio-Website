@@ -46,9 +46,9 @@ const ChatbotComponent: React.FC = () => {
     } catch (error) {
       console.error('Error generating response:', error);
       
-      // Provide a fallback response
+      // Provide a more informative fallback response
       setMessages(prev => [...prev, {
-        text: "I can tell you about Sohom's background, skills, projects, and more. What would you like to know?",
+        text: "I'm having trouble processing your request right now. Here's what I know about Sohom:\n\n- AI/ML Developer with 1.5+ years experience\n- Currently pursuing B.Tech in Computer Science\n- Skills: Python, PyTorch, TensorFlow, Computer Vision\n- Projects: Face detection, emotion recognition, weather apps\n\nWhat specific information would you like?",
         isUser: false
       }]);
       setIsTyping(false);

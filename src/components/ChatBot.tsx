@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { generateResponse } from '@/lib/chatbot';
 import { FaRobot, FaUser, FaPaperPlane } from 'react-icons/fa';
 
 interface Message {
@@ -24,7 +23,7 @@ const SimpleChatBot: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!input.trim()) return;
@@ -33,36 +32,107 @@ const SimpleChatBot: React.FC = () => {
     setMessages(prev => [...prev, { text: input, isUser: true }]);
     setIsTyping(true);
 
-    try {
-      // Get response from our simple chatbot
-      const response = generateResponse(input);
+    // Store the input before clearing it
+    const userInput = input;
 
-      // Add bot response
-      setMessages(prev => [...prev, { text: response, isUser: false }]);
-      setIsTyping(false);
-    } catch (error) {
-      console.error('Error generating response:', error);
+    // Clear input immediately
+    setInput('');
 
-      // Provide a comprehensive fallback response with Sohom's information
-      const fallbackResponse = `I can answer your question based on what I know about Sohom:
+    // Use setTimeout to simulate typing and allow UI to update
+    setTimeout(() => {
+      try {
+        // Get response directly from hardcoded responses
+        let response = "";
 
-Sohom Chatterjee is an AI/ML Developer with 1.5+ years of experience in machine learning, deep learning, and data science. He's currently pursuing a B.Tech in Computer Science and Engineering at Sister Nivedita University.
+        // Simple intent detection
+        const lowerInput = userInput.toLowerCase();
+
+        if (/help|what can you do/i.test(lowerInput)) {
+          response = `I'm Friday, Sohom's AI assistant. I can tell you about:
+- Sohom's background and education
+- His skills and experience in AI/ML
+- His projects and interests
+- His contact information
+- His preferences for frameworks like PyTorch vs TensorFlow
+- His expertise in Computer Vision and NLP
+
+Just ask me anything about Sohom, and I'll provide you with the information!`;
+        }
+        else if (/github|repositories|repos|code|projects/i.test(lowerInput)) {
+          response = `GitHub Profile for Sohom Chatterjee (Sagexd08):
+Location: Kolkata, India
+Public Repositories: 13
+Profile URL: https://github.com/Sagexd08
+
+Popular Repositories:
+- Face-Detection-Using-Python: Real-time face detection/recognition with OpenCV & ML
+- FaceGuard: AI-powered face recognition attendance system
+- Weather-Forcast: Weather forecasting app using the OpenWeatherMap API
+- Finger-Movement-tracker: Real-time finger gesture tracking with TensorFlow
+- Flappy-Bird-Game-using-Python: Implementation of the Flappy Bird game with Pygame
+- Emotion-Detector-by-Python: Program to classify emotions from text/images/audio`;
+        }
+        else if (/education|university|school|college/i.test(lowerInput)) {
+          response = `Education:
+- Sister Nivedita University – B.Tech in Computer Science and Engineering
+- DAV Model School, India – High School (Computer Science), 2010–2024
+
+Sohom is currently pursuing his B.Tech in Computer Science and Engineering at Sister Nivedita University.`;
+        }
+        else if (/skills|abilities|technologies|tech stack/i.test(lowerInput)) {
+          response = `Skills:
+- Python, PyTorch (preferred over TensorFlow)
+- Machine Learning & Deep Learning
+- Natural Language Processing
+- Computer Vision
+- Data Analysis & Visualization
+- React, JavaScript, TypeScript
+- Cloud Computing (AWS, GCP)
+
+Sohom is particularly skilled in AI/ML development, with expertise in Python, PyTorch, and TensorFlow.`;
+        }
+        else if (/ai|ml|machine learning|deep learning/i.test(lowerInput)) {
+          response = `AI/ML Experience:
+- 1.5+ years of experience in AI/ML development
+- Expertise in machine learning, deep learning, and data science
+- Practical projects in computer vision and emotion detection
+- Experience with PyTorch, TensorFlow, and other ML frameworks
+- Knowledge of neural networks and deep learning architectures
+
+Sohom has worked on various projects in this field, including face detection, emotion recognition, and finger movement tracking applications.`;
+        }
+        else if (/pytorch|tensorflow|framework/i.test(lowerInput)) {
+          response = `Framework Preferences:
+- Prefers PyTorch over TensorFlow for deep learning projects
+- Experience with various ML frameworks and libraries
+- Skilled in using scikit-learn, Pandas, NumPy for data analysis
+- Familiar with web frameworks like React
+
+Sohom prefers PyTorch over TensorFlow for deep learning projects due to its dynamic computation graph and intuitive design.`;
+        }
+        else {
+          response = `Sohom Chatterjee is an AI/ML Developer with 1.5+ years of experience in machine learning, deep learning, and data science. He's currently pursuing a B.Tech in Computer Science and Engineering at Sister Nivedita University.
 
 He's passionate about AI applications in solving real-world problems and prefers PyTorch over TensorFlow for deep learning projects. His skills include Python, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, and Data Analysis.
 
-Some of his notable projects include Face Detection, FaceGuard (attendance system), and Emotion Detection applications.
+Is there something specific about Sohom you'd like to know? You can ask about his education, skills, projects, or interests.`;
+        }
 
-Is there something specific about Sohom you'd like to know more about?`;
+        // Add bot response
+        setMessages(prev => [...prev, { text: response, isUser: false }]);
+      } catch (error) {
+        console.error('Error generating response:', error);
 
-      setMessages(prev => [...prev, {
-        text: fallbackResponse,
-        isUser: false
-      }]);
+        // Provide a simple fallback response
+        setMessages(prev => [...prev, {
+          text: "Sohom Chatterjee is an AI/ML Developer with 1.5+ years of experience. He's skilled in Python, PyTorch, and TensorFlow.",
+          isUser: false
+        }]);
+      }
+
+      // Stop typing animation
       setIsTyping(false);
-    }
-
-    // Clear input
-    setInput('');
+    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

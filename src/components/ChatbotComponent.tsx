@@ -34,8 +34,9 @@ const ChatbotComponent: React.FC = () => {
     setIsTyping(true);
     
     try {
-      // Get response from our chatbot
-      const response = generateResponse(input);
+      // Get response from our chatbot using the updated generateResponse function
+      // which now handles intent detection internally
+      const response = await generateResponse(input);
       
       // Simulate typing delay for a more natural feel
       setTimeout(() => {

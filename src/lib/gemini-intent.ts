@@ -1,4 +1,8 @@
-// Simple chatbot with intent detection and hardcoded responses
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Initialize the Gemini API with your API key
+const API_KEY = 'AIzaSyCg-Tqu4iJjhcuf7ORrbEFQg4Dtw-PrrtY';
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Sohom's information for context
 const sohomInfo = {
@@ -69,7 +73,7 @@ Projects:
 Personal Interests:
 - Artificial Intelligence and Machine Learning
 - Computer Vision applications
-- Cloud Development
+- Game Development
 - Web Development
   `,
   
@@ -89,7 +93,7 @@ Location:
   `,
   
   github: `
-Sohom Chatterjee (Sagexd08):
+GitHub Profile for Sohom Chatterjee (Sagexd08):
 Bio: "I am an undergraduate B.Tech Computer Science and Engineering student at Sister Nivedita University."
 Location: Kolkata, India
 Followers: 1
@@ -170,8 +174,67 @@ Creative AI Interests:
   `
 };
 
-// Function to detect user intent from prompt
-function detectIntent(prompt: string): string {
+// Function to detect intent using Gemini API
+export async function detectIntentWithGemini(prompt: string): Promise<string> {
+  try {
+    // Get the generative model
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    
+    // Send the prompt to Gemini for intent detection
+    const result = await model.generateContent(`
+You are an intent detection system. Your task is to analyze the following question and determine what category of information the user is asking about.
+
+Question: "${prompt}"
+
+Choose ONE of the following intents that best matches the question:
+- help (asking for help or what the bot can do)
+- github (asking about GitHub profile or repositories)
+- linkedin (asking about LinkedIn profile or work experience)
+- education (asking about educational background)
+- skills (asking about technical skills or abilities)
+- contact (asking for contact information)
+- location (asking about physical location)
+- ai_ml (asking about AI/ML experience or knowledge)
+- frameworks (asking about programming frameworks or libraries)
+- experience (asking about work experience)
+- interests (asking about personal interests)
+- creative_ai (asking about creative AI applications)
+- computer_vision (asking about computer vision)
+- nlp (asking about natural language processing)
+- general (general question that doesn't fit any specific category)
+
+Return ONLY the intent name, nothing else.
+`);
+    
+    // Extract the intent from the response
+    const intentText = result.response.text().trim().toLowerCase();
+    
+    // Map the response to a valid intent
+    const validIntents = [
+      "help", "github", "linkedin", "education", "skills", 
+      "contact", "location", "ai_ml", "frameworks", "experience", 
+      "interests", "creative_ai", "computer_vision", "nlp", "general"
+    ];
+    
+    // Find the closest matching intent
+    for (const intent of validIntents) {
+      if (intentText.includes(intent)) {
+        return intent;
+      }
+    }
+    
+    // Default to general if no match found
+    return "general";
+  } catch (error) {
+    console.error("Error detecting intent with Gemini:", error);
+    
+    // Fallback to simple regex-based intent detection
+    return detectIntentWithRegex(prompt);
+  }
+}
+
+// Fallback function to detect intent using regex
+function detectIntentWithRegex(prompt: string): string {
   const lowerPrompt = prompt.toLowerCase();
   
   // Check for specific intents
@@ -209,17 +272,18 @@ function detectIntent(prompt: string): string {
 }
 
 // Generate a response based on intent
-export function generateResponse(prompt: string): string {
-  // Detect the intent of the user's question
-  const intent = detectIntent(prompt);
-  console.log("Detected intent:", intent);
-  
-  // Generate a response based on the detected intent
-  let response = "";
-  
-  switch (intent) {
-    case "help":
-      response = `I'm Friday, Sohom's AI assistant. I can tell you about:
+export async function generateResponseWithIntent(prompt: string): Promise<string> {
+  try {
+    // Detect the intent using Gemini
+    const intent = await detectIntentWithGemini(prompt);
+    console.log("Detected intent with Gemini:", intent);
+    
+    // Generate a response based on the detected intent
+    let response = "";
+    
+    switch (intent) {
+      case "help":
+        response = `I'm Friday, Sohom's AI assistant. I can tell you about:
 - Sohom's background and education
 - His skills and experience in AI/ML
 - His projects and interests
@@ -229,95 +293,105 @@ export function generateResponse(prompt: string): string {
 - His location and social profiles
 
 Just ask me anything about Sohom, and I'll provide you with the information!`;
-      break;
-      
-    case "github":
-      response = `${sohomInfo.github}
+        break;
+        
+      case "github":
+        response = `${sohomInfo.github}
 
 Would you like to know more about any specific project?`;
-      break;
-      
-    case "linkedin":
-      response = `${sohomInfo.linkedin}
+        break;
+        
+      case "linkedin":
+        response = `${sohomInfo.linkedin}
 
 Is there anything specific about Sohom's professional background you'd like to know?`;
-      break;
-      
-    case "education":
-      response = `${sohomInfo.education}
+        break;
+        
+      case "education":
+        response = `${sohomInfo.education}
 
 Sohom is currently pursuing his B.Tech in Computer Science and Engineering at Sister Nivedita University. He completed his high school education at DAV Model School with a focus on Computer Science.`;
-      break;
-      
-    case "skills":
-      response = `${sohomInfo.skills}
+        break;
+        
+      case "skills":
+        response = `${sohomInfo.skills}
 
 Sohom is particularly skilled in AI/ML development, with expertise in Python, PyTorch, and TensorFlow. He has experience in both Computer Vision and Natural Language Processing.`;
-      break;
-      
-    case "contact":
-      response = `${sohomInfo.contact}
+        break;
+        
+      case "contact":
+        response = `${sohomInfo.contact}
 
 You can reach out to Sohom through any of these platforms. His email is the best way for direct communication.`;
-      break;
-      
-    case "location":
-      response = `${sohomInfo.location}
+        break;
+        
+      case "location":
+        response = `${sohomInfo.location}
 
 Sohom is based in India, specifically in the Kolkata/Durgapur area.`;
-      break;
-      
-    case "ai_ml":
-      response = `${sohomInfo.ai_ml}
+        break;
+        
+      case "ai_ml":
+        response = `${sohomInfo.ai_ml}
 
 Sohom has 1.5+ years of experience in AI/ML development and has worked on various projects in this field, including face detection, emotion recognition, and finger movement tracking applications.`;
-      break;
-      
-    case "frameworks":
-      response = `${sohomInfo.frameworks}
+        break;
+        
+      case "frameworks":
+        response = `${sohomInfo.frameworks}
 
 Sohom prefers PyTorch over TensorFlow for deep learning projects due to its dynamic computation graph and intuitive design.`;
-      break;
-      
-    case "experience":
-      response = `${sohomInfo.experience}
+        break;
+        
+      case "experience":
+        response = `${sohomInfo.experience}
 
 Sohom has 1.5+ years of experience in AI/ML development. He's also been involved with the GeeksforGeeks Sister Nivedita University Chapter.`;
-      break;
-      
-    case "interests":
-      response = `${sohomInfo.interests}
+        break;
+        
+      case "interests":
+        response = `${sohomInfo.interests}
 
 Sohom is passionate about AI applications in solving real-world problems and enjoys exploring cutting-edge technologies.`;
-      break;
-      
-    case "creative_ai":
-      response = `${sohomInfo.creative_ai}
+        break;
+        
+      case "creative_ai":
+        response = `${sohomInfo.creative_ai}
 
 Sohom is particularly interested in the intersection of AI and creative applications like music generation.`;
-      break;
-      
-    case "computer_vision":
-      response = `${sohomInfo.computer_vision}
+        break;
+        
+      case "computer_vision":
+        response = `${sohomInfo.computer_vision}
 
 Sohom has developed several computer vision projects, including face detection and recognition systems.`;
-      break;
-      
-    case "nlp":
-      response = `${sohomInfo.nlp}
+        break;
+        
+      case "nlp":
+        response = `${sohomInfo.nlp}
 
 Sohom has skills in Natural Language Processing and text analysis techniques.`;
-      break;
-      
-    default:
-      // General response for when no specific intent is detected
-      response = `${sohomInfo.basic}
+        break;
+        
+      default:
+        // General response for when no specific intent is detected
+        response = `${sohomInfo.basic}
 
 Sohom is passionate about AI applications in solving real-world problems and has worked on various projects including face detection, emotion recognition, and more.
 
 Is there something specific about Sohom you'd like to know? You can ask about his education, skills, projects, or interests.`;
-      break;
+        break;
+    }
+    
+    return response;
+  } catch (error) {
+    console.error("Error generating response with intent:", error);
+    
+    // Provide a fallback response
+    return `Sohom Chatterjee is an AI/ML Developer with 1.5+ years of experience in machine learning, deep learning, and data science. He's currently pursuing a B.Tech in Computer Science and Engineering at Sister Nivedita University.
+
+He's passionate about AI applications in solving real-world problems and prefers PyTorch over TensorFlow for deep learning projects. His skills include Python, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, and Data Analysis.
+
+Is there something specific about Sohom you'd like to know more about?`;
   }
-  
-  return response;
 }

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { generateResponse } from '@/lib/simple-chatbot';
+import { generateResponseWithIntent } from '@/lib/gemini-intent';
 import { FaRobot, FaUser, FaPaperPlane } from 'react-icons/fa';
 
 interface Message {
@@ -10,9 +10,9 @@ interface Message {
 const SimpleChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { 
-      text: "Hello! I'm Friday, Sohom's AI assistant. I can tell you about Sohom's background, skills, projects, and more. How can I help you today?", 
-      isUser: false 
+    {
+      text: "Hello! I'm Friday, Sohom's AI assistant. I can tell you about Sohom's background, skills, projects, and more. How can I help you today?",
+      isUser: false
     }
   ]);
   const [input, setInput] = useState('');
@@ -26,34 +26,41 @@ const SimpleChatBot: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!input.trim()) return;
-    
+
     // Add user message
     setMessages(prev => [...prev, { text: input, isUser: true }]);
     setIsTyping(true);
-    
+
     try {
-      // Get response from our simple chatbot
-      const response = generateResponse(input);
-      
-      // Simulate typing delay for a more natural feel
-      setTimeout(() => {
-        // Add bot response
-        setMessages(prev => [...prev, { text: response, isUser: false }]);
-        setIsTyping(false);
-      }, 1000);
+      // Get response with intent detection using Gemini
+      const response = await generateResponseWithIntent(input);
+
+      // Add bot response
+      setMessages(prev => [...prev, { text: response, isUser: false }]);
+      setIsTyping(false);
     } catch (error) {
       console.error('Error generating response:', error);
-      
-      // Provide a fallback response
+
+      // Provide a comprehensive fallback response with Sohom's information
+      const fallbackResponse = `I can answer your question based on what I know about Sohom:
+
+Sohom Chatterjee is an AI/ML Developer with 1.5+ years of experience in machine learning, deep learning, and data science. He's currently pursuing a B.Tech in Computer Science and Engineering at Sister Nivedita University.
+
+He's passionate about AI applications in solving real-world problems and prefers PyTorch over TensorFlow for deep learning projects. His skills include Python, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, and Data Analysis.
+
+Some of his notable projects include Face Detection, FaceGuard (attendance system), and Emotion Detection applications.
+
+Is there something specific about Sohom you'd like to know more about?`;
+
       setMessages(prev => [...prev, {
-        text: "I'm having trouble processing your request. Let me tell you what I know about Sohom: He's an AI/ML Developer with 1.5+ years of experience, currently studying Computer Science at Sister Nivedita University. He's skilled in Python, PyTorch, and TensorFlow.",
+        text: fallbackResponse,
         isUser: false
       }]);
       setIsTyping(false);
     }
-    
+
     // Clear input
     setInput('');
   };
@@ -164,7 +171,7 @@ const SimpleChatBot: React.FC = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder="Ask me anything about Sohom..."
                 className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 disabled={isTyping}

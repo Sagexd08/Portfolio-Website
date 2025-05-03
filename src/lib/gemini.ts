@@ -511,6 +511,15 @@ export async function generateResponse(prompt: string): Promise<string> {
       }
     }
 
-    return "I'm having trouble processing your request right now. Let me tell you what I know about Sohom without connecting to external sources.";
+    // Provide a helpful response based on the stored information
+    return `I can answer your question based on what I know about Sohom:
+
+Sohom Chatterjee is an AI/ML Developer with expertise in machine learning, deep learning, and data science. He has 1.5+ years of experience and is currently pursuing a B.Tech in Computer Science and Engineering at Sister Nivedita University.
+
+He's passionate about AI applications in solving real-world problems and prefers PyTorch over TensorFlow for deep learning projects. His skills include Python, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, and Data Analysis.
+
+Some of his notable projects include Face Detection, FaceGuard (attendance system), and Emotion Detection applications.
+
+Is there something specific about Sohom you'd like to know more about?`;
   }
 }

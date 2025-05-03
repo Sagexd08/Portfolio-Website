@@ -149,21 +149,19 @@ const ChatBot = () => {
     } catch (error) {
       console.error('Error generating response:', error);
 
-      // Create a more helpful error message
-      let errorMessage = "I'm having trouble processing your request right now.";
+      // Create a more helpful response with information about Sohom
+      const fallbackResponse = `I can answer your question based on what I know about Sohom:
 
-      if (error instanceof Error) {
-        if (error.message.includes("network") || error.message.includes("fetch")) {
-          errorMessage = "I'm having trouble connecting to my knowledge base due to network issues. Please check your internet connection and try again.";
-        } else if (error.message.includes("timeout")) {
-          errorMessage = "The request timed out. Please try again in a moment.";
-        } else if (error.message.includes("API")) {
-          errorMessage = "There seems to be an issue with my API connection. I can still answer general questions about Sohom.";
-        }
-      }
+Sohom Chatterjee is an AI/ML Developer with expertise in machine learning, deep learning, and data science. He has 1.5+ years of experience and is currently pursuing a B.Tech in Computer Science and Engineering at Sister Nivedita University.
+
+He's passionate about AI applications in solving real-world problems and prefers PyTorch over TensorFlow for deep learning projects. His skills include Python, Machine Learning, Deep Learning, Natural Language Processing, Computer Vision, and Data Analysis.
+
+Some of his notable projects include Face Detection, FaceGuard (attendance system), and Emotion Detection applications.
+
+Is there something specific about Sohom you'd like to know more about?`;
 
       setMessages(prev => [...prev, {
-        text: errorMessage,
+        text: fallbackResponse,
         isUser: false
       }]);
     } finally {

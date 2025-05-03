@@ -87,7 +87,7 @@ const Message: React.FC<MessageProps> = ({ text, isUser, isTyping = false }) => 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { text: "Hello! I'm Friday, Sohom's AI assistant. I've been upgraded with new capabilities!\n\n• I can now fetch real-time information from Sohom's GitHub and LinkedIn profiles\n• I can scrape web content from URLs you provide\n• I've been configured to provide more personalized answers based on your questions\n\nAsk me about Sohom's projects, skills, or provide a URL to explore. How can I help you today?", isUser: false }
+    { text: "Hello! I'm Friday, Sohom's AI assistant. I've been upgraded with new capabilities!\n\n• I can now fetch real-time information from Sohom's GitHub and LinkedIn profiles\n• I can scrape web content from URLs you provide\n• I've been configured to provide more personalized answers based on your questions\n\nSohom is an AI/ML Developer with 1.5+ years of experience specializing in machine learning, deep learning, and data science. Ask me about his projects, skills, or provide a URL to explore. How can I help you today?", isUser: false }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);

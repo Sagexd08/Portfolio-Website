@@ -20,7 +20,7 @@ const Technologies: React.FC = () => {
       icon: '/assets/tech-icons/python.svg',
       color: '53, 114, 165',
       expertise: 'Expert in Python for data science, machine learning, and backend development. Proficient with libraries like NumPy, Pandas, and scikit-learn.',
-      years: 1.5,
+      years: 3,
       projects: 10
     },
     {

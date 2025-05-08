@@ -19,7 +19,7 @@ const Technologies: React.FC = () => {
       name: 'Python',
       icon: '/assets/tech-icons/python.svg',
       color: '53, 114, 165',
-      expertise: 'Expert in Python for data science, machine learning, and backend development. Proficient with libraries like NumPy, Pandas, and scikit-learn.',
+      expertise: 'Expert in Python for ML/AI and backend. Proficient with NumPy, Pandas, scikit-learn, and TensorFlow.',
       years: 3,
       projects: 10
     },
@@ -27,7 +27,7 @@ const Technologies: React.FC = () => {
       name: 'JavaScript',
       icon: '/assets/tech-icons/javascript.svg',
       color: '247, 223, 30',
-      expertise: 'Strong knowledge of modern JavaScript (ES6+) for frontend and backend development. Experience with asynchronous programming and DOM manipulation.',
+      expertise: 'Modern JavaScript (ES6+) for frontend & backend. Async programming, DOM manipulation, and web APIs.',
       years: 1,
       projects: 2
     },
@@ -35,7 +35,7 @@ const Technologies: React.FC = () => {
       name: 'TypeScript',
       icon: '/assets/tech-icons/typescript.svg',
       color: '49, 120, 198',
-      expertise: 'Skilled in TypeScript for building type-safe applications. Experience with interfaces, generics, and advanced type features.',
+      expertise: 'Type-safe applications with interfaces, generics, and advanced typing. Enhanced code quality and maintainability.',
       years: 1,
       projects: 1
     },
@@ -43,7 +43,7 @@ const Technologies: React.FC = () => {
       name: 'HTML',
       icon: '/assets/tech-icons/html.svg',
       color: '227, 79, 38',
-      expertise: 'Proficient in semantic HTML5 markup, accessibility best practices, and modern web standards.',
+      expertise: 'Semantic HTML5, accessibility, SEO optimization, and responsive layouts. Focus on clean, standards-compliant code.',
       years: 1,
       projects: 2
     },
@@ -51,7 +51,7 @@ const Technologies: React.FC = () => {
       name: 'CSS',
       icon: '/assets/tech-icons/css.svg',
       color: '33, 150, 243',
-      expertise: 'Advanced CSS skills including Flexbox, Grid, animations, and responsive design. Experience with CSS preprocessors like SASS.',
+      expertise: 'Flexbox, Grid, animations, and responsive design. SASS/SCSS, Tailwind CSS, and CSS-in-JS solutions.',
       years: 1,
       projects: 2
     },
@@ -59,7 +59,7 @@ const Technologies: React.FC = () => {
       name: 'React',
       icon: '/assets/tech-icons/react.svg',
       color: '97, 218, 251',
-      expertise: 'Experience with React for building interactive UIs. Proficient with hooks, context API, and state management.',
+      expertise: 'Component-based UIs with hooks, context API, and state management. Next.js, React Router, and performance optimization.',
       years: 1,
       projects: 1
     },
@@ -67,7 +67,7 @@ const Technologies: React.FC = () => {
       name: 'Supabase',
       icon: '/assets/tech-icons/supabase.svg',
       color: '62, 207, 142',
-      expertise: 'Experience with Supabase for backend services including authentication, database, and real-time subscriptions.',
+      expertise: 'Backend-as-a-service with PostgreSQL, auth, storage, and real-time subscriptions. API integration and serverless functions.',
       years: 1,
       projects: 2
     },
@@ -75,7 +75,7 @@ const Technologies: React.FC = () => {
       name: 'AWS',
       icon: '/assets/tech-icons/aws.svg',
       color: '255, 153, 0',
-      expertise: 'Experience with AWS services including EC2, S3, and Lambda. Familiar with serverless architecture and cloud deployment.',
+      expertise: 'Cloud infrastructure with EC2, S3, Lambda, and DynamoDB. Serverless architecture, IAM, and CI/CD pipelines.',
       years: 1,
       projects: 1
     },
@@ -83,7 +83,7 @@ const Technologies: React.FC = () => {
       name: 'Google Cloud',
       icon: '/assets/tech-icons/gcp-new.svg',
       color: '66, 133, 244',
-      expertise: 'Experience with Google Cloud Platform services including Compute Engine, Cloud Functions, and Cloud Storage. Familiar with AI/ML APIs.',
+      expertise: 'GCP services for ML/AI workloads. Compute Engine, Cloud Functions, BigQuery, and AI Platform. Integration with TensorFlow and PyTorch.',
       years: 1,
       projects: 1
     }

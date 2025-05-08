@@ -513,9 +513,21 @@ export default function Home() {
               I&apos;m currently available for AI/ML projects and open to
               discussing new opportunities.
             </p>
-            <Link href="mailto:sohomchatterjee07@gmail.com" passHref>
-              <Button className="mt-6">Get in touch</Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+              <Link href="mailto:sohomchatterjee07@gmail.com" passHref>
+                <Button>Get in touch</Button>
+              </Link>
+              <a href="/assets/Sohom_Chatterjee_CV.pdf" download className="inline-block">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-download">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Download CV
+                </Button>
+              </a>
+            </div>
           </div>
         </section>
       </div>

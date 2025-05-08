@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { generateResponse } from '@/lib/chatbot';
 import { FaRobot, FaUser, FaPaperPlane, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
-import ThemeToggle from './ThemeToggle';
 
 interface Message {
   text: string;
@@ -12,9 +11,9 @@ interface Message {
 const ChatbotComponent: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { 
-      text: "Hello! I'm Friday, Sohom's AI assistant. I can tell you about Sohom's background, skills, projects, and more. How can I help you today?", 
-      isUser: false 
+    {
+      text: "Hello! I'm Friday, Sohom's AI assistant. I can tell you about Sohom's background, skills, projects, and more. How can I help you today?",
+      isUser: false
     }
   ]);
   const [input, setInput] = useState('');
@@ -26,20 +25,25 @@ const ChatbotComponent: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!input.trim()) return;
-    
+
     // Add user message
     setMessages(prev => [...prev, { text: input, isUser: true }]);
     setIsTyping(true);
-    
+
+    // Store the input before clearing it
+    const userInput = input;
+
+    // Clear input immediately
+    setInput('');
+
     try {
-      // Get response from our chatbot using the updated generateResponse function
-      // which now handles intent detection internally
-      const response = await generateResponse(input);
-      
+      // Get response from our simple chatbot
+      const response = generateResponse(userInput);
+
       // Simulate typing delay for a more natural feel
       setTimeout(() => {
         // Add bot response
@@ -48,17 +52,16 @@ const ChatbotComponent: React.FC = () => {
       }, 1000);
     } catch (error) {
       console.error('Error generating response:', error);
-      
-      // Provide a more informative fallback response
-      setMessages(prev => [...prev, {
-        text: "I'm having trouble processing your request right now. Here's what I know about Sohom:\n\n- AI/ML Developer with 1.5+ years experience\n- Currently pursuing B.Tech in Computer Science\n- Skills: Python, PyTorch, TensorFlow, Computer Vision\n- Projects: Face detection, emotion recognition, weather apps\n\nWhat specific information would you like?",
-        isUser: false
-      }]);
-      setIsTyping(false);
+
+      // Provide a simple fallback response
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          text: "I can tell you about Sohom's background, skills, projects, and more. What would you like to know?",
+          isUser: false
+        }]);
+        setIsTyping(false);
+      }, 1000);
     }
-    
-    // Clear input
-    setInput('');
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -85,7 +88,7 @@ const ChatbotComponent: React.FC = () => {
       {/* Chat window */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[350px] flex-col rounded-lg bg-background shadow-2xl border border-gray-200 dark:border-gray-800"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -161,7 +164,7 @@ const ChatbotComponent: React.FC = () => {
               </div>
             ))}
             {isTyping && (
-              <motion.div 
+              <motion.div
                 className="mb-4 flex justify-start"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

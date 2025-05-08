@@ -39,6 +39,7 @@ import ChatbotComponent from "@/components/ChatbotComponent";
 import SkillBar from "@/components/SkillBar";
 import ClientOnly from "@/components/ClientOnly";
 import dynamic from 'next/dynamic';
+import Technologies from "@/components/Technologies.simple";
 
 // Import ThreeScene with no SSR
 const ThreeScene = dynamic(() => import('@/components/ThreeScene'), { ssr: false });
@@ -425,6 +426,11 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Technologies */}
+        <section id="technologies" data-scroll-section>
+          <Technologies />
         </section>
 
         {/* Skills */}

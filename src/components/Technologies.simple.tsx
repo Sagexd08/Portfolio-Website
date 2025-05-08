@@ -20,16 +20,16 @@ const Technologies: React.FC = () => {
       icon: '/assets/tech-icons/python.svg',
       color: '53, 114, 165',
       expertise: 'Expert in Python for data science, machine learning, and backend development. Proficient with libraries like NumPy, Pandas, and scikit-learn.',
-      years: 3,
-      projects: 12
+      years: 1.5,
+      projects: 10
     },
     {
       name: 'JavaScript',
       icon: '/assets/tech-icons/javascript.svg',
       color: '247, 223, 30',
       expertise: 'Strong knowledge of modern JavaScript (ES6+) for frontend and backend development. Experience with asynchronous programming and DOM manipulation.',
-      years: 2,
-      projects: 8
+      years: 1,
+      projects: 2
     },
     {
       name: 'TypeScript',
@@ -37,31 +37,31 @@ const Technologies: React.FC = () => {
       color: '49, 120, 198',
       expertise: 'Skilled in TypeScript for building type-safe applications. Experience with interfaces, generics, and advanced type features.',
       years: 1,
-      projects: 5
+      projects: 1
     },
     {
       name: 'HTML',
       icon: '/assets/tech-icons/html.svg',
       color: '227, 79, 38',
       expertise: 'Proficient in semantic HTML5 markup, accessibility best practices, and modern web standards.',
-      years: 3,
-      projects: 15
+      years: 1,
+      projects: 2
     },
     {
       name: 'CSS',
       icon: '/assets/tech-icons/css.svg',
       color: '33, 150, 243',
       expertise: 'Advanced CSS skills including Flexbox, Grid, animations, and responsive design. Experience with CSS preprocessors like SASS.',
-      years: 3,
-      projects: 15
+      years: 1,
+      projects: 2
     },
     {
       name: 'React',
       icon: '/assets/tech-icons/react.svg',
       color: '97, 218, 251',
-      expertise: 'Expert in React for building interactive UIs. Proficient with hooks, context API, and state management solutions like Redux.',
-      years: 2,
-      projects: 7
+      expertise: 'Experience with React for building interactive UIs. Proficient with hooks, context API, and state management.',
+      years: 1,
+      projects: 1
     },
     {
       name: 'Supabase',
@@ -69,23 +69,23 @@ const Technologies: React.FC = () => {
       color: '62, 207, 142',
       expertise: 'Experience with Supabase for backend services including authentication, database, and real-time subscriptions.',
       years: 1,
-      projects: 3
+      projects: 2
     },
     {
       name: 'AWS',
       icon: '/assets/tech-icons/aws.svg',
       color: '255, 153, 0',
-      expertise: 'Skilled in AWS services including EC2, S3, Lambda, and DynamoDB. Experience with serverless architecture and cloud deployment.',
-      years: 2,
-      projects: 6
+      expertise: 'Experience with AWS services including EC2, S3, and Lambda. Familiar with serverless architecture and cloud deployment.',
+      years: 1,
+      projects: 1
     },
     {
       name: 'Google Cloud',
       icon: '/assets/tech-icons/gcp-new.svg',
       color: '66, 133, 244',
-      expertise: 'Proficient with Google Cloud Platform services including Compute Engine, Cloud Functions, Cloud Storage, and BigQuery. Experience with AI/ML APIs, Kubernetes Engine (GKE), and Cloud Run for containerized applications.',
+      expertise: 'Experience with Google Cloud Platform services including Compute Engine, Cloud Functions, and Cloud Storage. Familiar with AI/ML APIs.',
       years: 1,
-      projects: 4
+      projects: 1
     }
   ];
 

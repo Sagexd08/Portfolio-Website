@@ -27,7 +27,7 @@ const Technologies: React.FC = () => {
       name: 'JavaScript',
       icon: '/assets/tech-icons/javascript.svg',
       color: '247, 223, 30',
-      expertise: 'Modern JavaScript (ES6+) for frontend & backend. Async programming, DOM manipulation, and web APIs.',
+      expertise: 'ES6+ for frontend & backend. Async programming, DOM manipulation, and modern frameworks.',
       years: 1,
       projects: 2
     },
@@ -83,7 +83,7 @@ const Technologies: React.FC = () => {
       name: 'Google Cloud',
       icon: '/assets/tech-icons/gcp-new.svg',
       color: '66, 133, 244',
-      expertise: 'GCP services for ML/AI workloads. Compute Engine, Cloud Functions, BigQuery, and AI Platform. Integration with TensorFlow and PyTorch.',
+      expertise: 'GCP for ML/AI workloads. Compute Engine, Cloud Functions, and BigQuery. ML APIs and TensorFlow integration.',
       years: 1,
       projects: 1
     }

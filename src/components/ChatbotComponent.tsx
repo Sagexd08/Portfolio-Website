@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateResponse } from '@/lib/chatbot';
-import { FaRobot, FaUser, FaPaperPlane, FaTimes } from 'react-icons/fa';
+import { generateEnhancedResponse, analyzeSentiment } from '@/lib/gemini';
+import { FaRobot, FaUser, FaPaperPlane, FaTimes, FaGoogle } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {
   text: string;
   isUser: boolean;
+  sentiment?: 'positive' | 'negative' | 'neutral';
+  topics?: string[];
 }
 
 const ChatbotComponent: React.FC = () => {
@@ -13,11 +16,15 @@ const ChatbotComponent: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       text: "Hello! I'm Friday, Sohom's AI assistant. I can tell you about Sohom's background, skills, projects, and more. How can I help you today?",
-      isUser: false
+      isUser: false,
+      sentiment: 'positive'
     }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [useGemini, setUseGemini] = useState(true);
+  const [isGeminiError, setIsGeminiError] = useState(false);
+  const [chatHistory, setChatHistory] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom of messages
@@ -25,7 +32,17 @@ const ChatbotComponent: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Update chat history for context
+  useEffect(() => {
+    if (messages.length > 1) {
+      const historyText = messages.map(msg =>
+        `${msg.isUser ? 'User' : 'Friday'}: ${msg.text}`
+      ).join('\n');
+      setChatHistory(historyText);
+    }
+  }, [messages]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!input.trim()) return;
@@ -41,15 +58,63 @@ const ChatbotComponent: React.FC = () => {
     setInput('');
 
     try {
-      // Get response from our simple chatbot
-      const response = generateResponse(userInput);
+      if (useGemini) {
+        // Try to use Gemini API for enhanced responses
+        try {
+          // Analyze sentiment first
+          const sentimentResult = await analyzeSentiment(userInput);
+          let sentiment: 'positive' | 'negative' | 'neutral' = 'neutral';
+          let topics: string[] = [];
 
-      // Simulate typing delay for a more natural feel
-      setTimeout(() => {
-        // Add bot response
-        setMessages(prev => [...prev, { text: response, isUser: false }]);
-        setIsTyping(false);
-      }, 1000);
+          // Parse sentiment analysis result
+          if (sentimentResult.includes('Sentiment: positive')) {
+            sentiment = 'positive';
+          } else if (sentimentResult.includes('Sentiment: negative')) {
+            sentiment = 'negative';
+          }
+
+          // Extract topics if available
+          const topicsMatch = sentimentResult.match(/Topics: (.*?)(\n|$)/);
+          if (topicsMatch && topicsMatch[1]) {
+            topics = topicsMatch[1].split(',').map(t => t.trim());
+          }
+
+          // Get enhanced response from Gemini
+          const response = await generateEnhancedResponse(userInput, chatHistory);
+
+          // Add bot response with sentiment and topics
+          setTimeout(() => {
+            setMessages(prev => [...prev, {
+              text: response,
+              isUser: false,
+              sentiment,
+              topics
+            }]);
+            setIsTyping(false);
+            setIsGeminiError(false);
+          }, 1000);
+        } catch (geminiError) {
+          console.error('Gemini API error:', geminiError);
+          setIsGeminiError(true);
+
+          // Fallback to basic response
+          const fallbackResponse = generateResponse(userInput);
+          setTimeout(() => {
+            setMessages(prev => [...prev, {
+              text: fallbackResponse,
+              isUser: false
+            }]);
+            setIsTyping(false);
+          }, 1000);
+        }
+      } else {
+        // Use basic response generator
+        const response = generateResponse(userInput);
+        setTimeout(() => {
+          setMessages(prev => [...prev, { text: response, isUser: false }]);
+          setIsTyping(false);
+        }, 1000);
+      }
     } catch (error) {
       console.error('Error generating response:', error);
 
@@ -104,11 +169,25 @@ const ChatbotComponent: React.FC = () => {
                 transition={{ duration: 2, repeat: 0 }}
                 className="bg-white/20 p-2 rounded-full"
               >
-                <FaRobot className="h-5 w-5" />
+                {useGemini ? (
+                  <FaGoogle className="h-5 w-5" />
+                ) : (
+                  <FaRobot className="h-5 w-5" />
+                )}
               </motion.div>
               <div>
                 <h3 className="text-lg font-bold">Friday</h3>
-                <p className="text-xs text-primary-foreground/80">Sohom's AI Assistant</p>
+                <div className="flex items-center">
+                  <p className="text-xs text-primary-foreground/80 mr-2">Sohom's AI Assistant</p>
+                  <div
+                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${useGemini ? 'bg-green-400' : 'bg-gray-400'}`}
+                    onClick={() => setUseGemini(!useGemini)}
+                  >
+                    <span
+                      className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${useGemini ? 'translate-x-4' : 'translate-x-1'}`}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
             <motion.button
@@ -142,8 +221,11 @@ const ChatbotComponent: React.FC = () => {
                 >
                   <div className="flex items-start space-x-2">
                     {!message.isUser && (
-                      <div className="flex-shrink-0 bg-primary/10 p-1.5 rounded-full">
-                        <FaRobot className="h-3.5 w-3.5 text-primary" />
+                      <div className={`flex-shrink-0 ${useGemini ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-primary/10'} p-1.5 rounded-full`}>
+                        {useGemini ?
+                          <FaGoogle className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" /> :
+                          <FaRobot className="h-3.5 w-3.5 text-primary" />
+                        }
                       </div>
                     )}
                     <div className={`whitespace-pre-wrap ${!message.isUser ? 'text-gray-800 dark:text-gray-200' : ''}`}>
@@ -153,6 +235,24 @@ const ChatbotComponent: React.FC = () => {
                           {i !== message.text.split('\n').length - 1 && <br />}
                         </React.Fragment>
                       ))}
+
+                      {/* Show topics if available */}
+                      {!message.isUser && message.topics && message.topics.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {message.topics.map((topic, i) => (
+                            <span key={i} className="inline-block rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-xs">
+                              {topic}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Show error message if Gemini API failed */}
+                      {!message.isUser && isGeminiError && index === messages.length - 1 && (
+                        <p className="mt-1 text-xs text-red-500">
+                          (Gemini API connection failed, using fallback response)
+                        </p>
+                      )}
                     </div>
                     {message.isUser && (
                       <div className="flex-shrink-0 bg-white/20 p-1.5 rounded-full">
@@ -172,8 +272,11 @@ const ChatbotComponent: React.FC = () => {
               >
                 <div className="max-w-[80%] rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 shadow-sm">
                   <div className="flex items-center space-x-2">
-                    <div className="flex-shrink-0 bg-primary/10 p-1.5 rounded-full">
-                      <FaRobot className="h-3.5 w-3.5 text-primary" />
+                    <div className={`flex-shrink-0 ${useGemini ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-primary/10'} p-1.5 rounded-full`}>
+                      {useGemini ?
+                        <FaGoogle className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" /> :
+                        <FaRobot className="h-3.5 w-3.5 text-primary" />
+                      }
                     </div>
                     <div className="typing-indicator">
                       <span></span>

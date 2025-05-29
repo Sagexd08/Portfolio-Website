@@ -1,7 +1,7 @@
 // Gemini API client for enhanced chatbot capabilities
 
 // Gemini API key
-const GEMINI_API_KEY = 'AIzaSyCg-Tqu4iJjhcuf7ORrbEFQg4Dtw-PrrtY';
+const GEMINI_API_KEY = 'AIzaSyBSrBf0wnMI9yQRTuKoaHmR7uLeoNazbWA';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
 // Knowledge base for Sohom's information
